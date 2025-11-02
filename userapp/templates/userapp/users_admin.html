@@ -2,66 +2,71 @@
 {% load i18n %}
 
 {% block dashboard_content %}
-<div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl p-8">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
-        <i class="fa-solid fa-users-cog text-yellow-500 mr-3"></i>
+<div class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl p-6 md:p-10">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6 flex items-center">
+        <i class="fa-solid fa-users-cog text-yellow-500 mr-4"></i>
         {% trans "User & Pet Management" %}
     </h1>
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200 rounded-xl shadow-sm">
-            <thead>
-                <tr class="bg-indigo-50 text-indigo-900">
-                    <th class="py-3 px-4 text-left font-semibold">{% trans "User" %}</th>
-                    <th class="py-3 px-4 text-left font-semibold">{% trans "Email" %}</th>
-                    <th class="py-3 px-4 text-left font-semibold">{% trans "Pets" %}</th>
-                    <th class="py-3 px-4 text-left font-semibold">{% trans "Subscription Plan" %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr class="border-t">
-                    <td class="py-3 px-4 font-medium text-gray-700">
-                        {{ user.get_full_name|default:user.email }}
-                        {% if user.is_superuser %}
-                            <span class="ml-2 px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">{% trans "Admin" %}</span>
-                        {% elif user.is_staff %}
-                            <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{% trans "Staff" %}</span>
-                        {% endif %}
-                    </td>
-                    <td class="py-3 px-4 text-gray-600">{{ user.email }}</td>
-                    <td class="py-3 px-4">
-                        {% if user.pets.all %}
-                            <ul class="list-disc ml-4">
-                                {% for pet in user.pets.all %}
-                                <li>
-                                    <span class="font-semibold">{{ pet.name }}</span>
-                                    <span class="text-xs text-gray-500">({{ pet.pet_type|title }})</span>
-                                    <span class="text-xs text-gray-400">| {% trans "Breed" %}: {{ pet.breed|default:"?" }}</span>
-                                    <span class="text-xs text-gray-400">| {% trans "Age" %}: {{ pet.age_years }}y {{ pet.age_months }}m</span>
-                                </li>
-                                {% empty %}
-                                <li class="text-gray-400">{% trans "No pets" %}</li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <span class="text-gray-400">{% trans "No pets" %}</span>
-                        {% endif %}
-                    </td>
-                    <td class="py-3 px-4 text-gray-600">
-                        {% if user.profile.subscription_plan %}
-                            <span class="font-semibold">{{ user.profile.subscription_plan.get_name_display }}</span>
-                        {% else %}
-                            <span class="text-gray-400">{% trans "No subscription" %}</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="py-6 text-center text-gray-400">{% trans "No users found." %}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+    <!-- ALL VIEWS: Responsive Cards -->
+    <div class="grid grid-cols-1 gap-6">
+        {% for user in users %}
+        <div class="bg-gray-50 rounded-2xl border border-gray-200 shadow-lg p-5">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-lg font-semibold text-gray-800 truncate">
+                    {{ user.get_full_name|default:user.email }}
+                </h2>
+                <div class="flex-shrink-0">
+                    {% if user.is_superuser %}
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-lg text-xs font-medium">{% trans "Admin" %}</span>
+                    {% elif user.is_staff %}
+                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium">{% trans "Staff" %}</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="text-gray-600 text-sm space-y-2">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-envelope text-gray-400 w-5 mr-2"></i>
+                    <span>{{ user.email }}</span>
+                </div>
+                
+                <!-- Subscription Plan Section -->
+                <div class="flex items-center">
+                    <i class="fa-solid fa-credit-card text-gray-400 w-5 mr-2"></i>
+                    {% if user.profile.subscription_plan %}
+                        <span class="font-semibold text-gray-700">{{ user.profile.subscription_plan.get_name_display }}</span>
+                    {% else %}
+                        <span class="text-gray-400 italic">{% trans "No subscription" %}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Pets Section -->
+                <div>
+                    <div class="font-medium text-gray-700 mb-1 flex items-center">
+                        <i class="fa-solid fa-paw text-gray-400 w-5 mr-2"></i>
+                        <span>{% trans "Pets:" %}</span>
+                    </div>
+                    {% if user.pets.all %}
+                        <ul class="list-none ml-2 space-y-1 text-sm">
+                            {% for pet in user.pets.all %}
+                            <li class="flex items-center text-gray-600">
+                                <span class="font-semibold mr-1">{{ pet.name }}</span>
+                                <span class="text-xs text-gray-500">({{ pet.pet_type|title }})</span>
+                                <span class="text-xs text-gray-400 ml-1">• {% trans "Breed" %}: {{ pet.breed|default:"?" }}</span>
+                                <span class="text-xs text-gray-400 ml-1">• {% trans "Age" %}: {{ pet.age_years }}y {{ pet.age_months }}m</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="text-gray-400 italic text-sm ml-2">{% trans "No pets" %}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="py-12 text-center text-gray-400 text-lg col-span-full">{% trans "No users found." %}</div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

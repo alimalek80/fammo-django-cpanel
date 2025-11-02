@@ -12,3 +12,110 @@
     background-color: #dbeafe; /* blue-100 */
     display: none;
 }
+
+.markdown-content h1 {
+    font-size: 2.25rem;
+    margin-top: 2rem;
+    margin-bottom: 1.2rem;
+    font-weight: bold;
+    color: #3730a3; /* indigo-800 */
+}
+.markdown-content h2 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: #4338ca; /* indigo-700 */
+}
+.markdown-content h3 {
+    font-size: 1.25rem;
+    margin-top: 1.2rem;
+    margin-bottom: 0.8rem;
+    font-weight: bold;
+    color: #6366f1; /* indigo-500 */
+}
+.markdown-content {
+    color: #111827; /* Tailwind gray-900, nice dark text */
+}
+.markdown-content p {
+    margin-bottom: 1.1em;
+    line-height: 1.7;
+}
+/*.markdown-content ul, .markdown-content ol {*/
+/*    margin-left: 2em;*/
+/*    margin-bottom: 1em;*/
+/*}*/
+/*.markdown-content li {*/
+/*    margin-bottom: 0.5em;*/
+/*}*/
+.markdown-content blockquote {
+    border-left: 4px solid #a5b4fc;
+    padding-left: 1em;
+    color: #6b7280;
+    margin: 1em 0;
+    background: #f3f4f6;
+}
+.markdown-content code {
+    background: #f3f4f6;
+    padding: 0.2em 0.4em;
+    border-radius: 0.3em;
+    font-size: 0.95em;
+}
+.markdown-content pre {
+    background: #f3f4f6;
+    padding: 1em;
+    border-radius: 0.5em;
+    overflow-x: auto;
+    margin-bottom: 1.5em;
+}
+.markdown-content img {
+    max-width: 100%;
+    border-radius: 0.5em;
+    margin: 1em 0;
+}
+.markdown-content a {
+    color: #2563eb; /* Tailwind blue-600 */
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+.markdown-content a:hover {
+    color: #1d4ed8; /* Tailwind blue-700 */
+    text-decoration: underline;
+}
+
+/* -------- Dashboard button visibility fixes -------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem; /* px-5 py-2.5 */
+    border-radius: 0.75rem; /* rounded-xl */
+    font-weight: 600;
+    line-height: 1.25rem;
+    text-decoration: none;
+    border: 1px solid rgba(0,0,0,0.08);
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.btn-elevated {
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+}
+
+.btn-gradient-purple {
+    background-image: linear-gradient(90deg, #7c3aed, #c026d3) !important;
+    color: #fff !important;
+}
+
+.btn-gradient-emerald {
+    background-image: linear-gradient(90deg, #059669, #0d9488) !important;
+    color: #fff !important;
+}
+
+.btn i { pointer-events: none; }
+
+/* Ensure sticky bar has solid background behind gradients */
+.sticky-actions {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(4px);
+}

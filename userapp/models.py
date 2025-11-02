@@ -9,7 +9,7 @@ from subscription.models import SubscriptionPlan
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
 
     objects = CustomUserManager()
@@ -40,6 +40,8 @@ class Profile(models.Model):
         default=None,
         related_name='profiles'
     )
+    
+    is_writer = models.BooleanField(default=False, verbose_name="Writer")
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.user.email}"

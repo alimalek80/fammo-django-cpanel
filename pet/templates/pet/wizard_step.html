@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Step {{ step_number }} / {{ step_total }} - Add Pet{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 p-6">
+    <!-- Progress bar -->
+    <div class="mb-6">
+        <div class="flex justify-between items-center mb-2">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Add Pet Profile</h2>
+            <span class="text-sm text-gray-600 dark:text-gray-400">Step {{ step_number }} / {{ step_total }}</span>
+        </div>
+        
+        <!-- Progress Bar -->
+        <progress class="progress progress-primary w-full mb-4" value="{{ progress_percent }}" max="100"></progress>
+        
+        <!-- Progress text -->
+        <div class="text-center text-sm text-gray-600 dark:text-gray-400 mb-2">
+            Progress: {{ progress_percent }}% complete
+        </div>
+    </div>
+
+    <form method="post" class="bg-white dark:bg-gray-700 rounded-xl shadow-lg p-6">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+
+        <!-- Display Messages -->
+        {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} mb-4">
+                        {% if message.tags == 'error' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {% elif message.tags == 'warning' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+                        {% elif message.tags == 'info' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                    </div>
+                    
+                    <!-- Show helpful options for existing user email errors on step 14 -->
+                    {% if message.tags == 'error' and wizard.steps.current == "step14" and "already exists" in message.message %}
+                        <div class="alert alert-info mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <h3 class="font-bold">What are your options?</h3>
+                                <div class="text-sm mt-2">
+                                    <div class="space-y-2">
+                                        <div class="flex items-start gap-2">
+                                            <span class="font-medium">Option 1:</span>
+                                            <div>
+                                                <a href="{% url 'login' %}" class="link link-primary font-medium">Log in to your existing account</a>
+                                                <span class="text-gray-600">and add this pet to your profile</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <span class="font-medium">Option 2:</span>
+                                            <span>Use a different email address below and continue</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Step Content based on current step -->
+        {% if wizard.steps.current == "step1" %}
+            {% include "pet/wizard_steps/step1_name.html" %}
+        {% elif wizard.steps.current == "step2" %}
+            {% include "pet/wizard_steps/step2_gender.html" %}
+        {% elif wizard.steps.current == "step3" %}
+            {% include "pet/wizard_steps/step3_age.html" %}
+        {% elif wizard.steps.current == "step4" %}
+            {% include "pet/wizard_steps/step4_breed.html" %}
+        {% elif wizard.steps.current == "step5" %}
+            {% include "pet/wizard_steps/step5_food.html" %}
+        {% elif wizard.steps.current == "step6" %}
+            {% include "pet/wizard_steps/step6_food_feeling.html" %}
+        {% elif wizard.steps.current == "step7" %}
+            {% include "pet/wizard_steps/step7_food_importance.html" %}
+        {% elif wizard.steps.current == "step8" %}
+            {% include "pet/wizard_steps/step8_body_type.html" %}
+        {% elif wizard.steps.current == "step9" %}
+            {% include "pet/wizard_steps/step9_weight.html" %}
+        {% elif wizard.steps.current == "step10" %}
+            {% include "pet/wizard_steps/step10_activity_level.html" %}
+        {% elif wizard.steps.current == "step11" %}
+            {% include "pet/wizard_steps/step11_food_allergies.html" %}
+        {% elif wizard.steps.current == "step12" %}
+            {% include "pet/wizard_steps/step12_health_issues.html" %}
+        {% elif wizard.steps.current == "step13" %}
+            {% include "pet/wizard_steps/step13_treat_frequency.html" %}
+        {% elif wizard.steps.current == "step14" %}
+            {% include "pet/wizard_steps/step14_email.html" %}
+        {% elif wizard.steps.current == "step15" %}
+            {% include "pet/wizard_steps/step15_account_choice.html" %}
+        {% endif %}
+
+        <!-- Navigation buttons -->
+        <div class="flex justify-between items-center mt-8">
+            {% if wizard.steps.prev %}
+                <button type="submit" name="wizard_goto_step" value="{{ wizard.steps.prev }}" 
+                        formnovalidate
+                        class="inline-flex items-center px-6 py-3 bg-gray-500 text-white font-semibold rounded-xl shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-200 transform hover:scale-105"
+                        style="background-color: #6b7280 !important; color: white !important;">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    {{ _("Previous") }}
+                </button>
+            {% else %}
+                <div></div>
+            {% endif %}
+
+            {% if wizard.steps.next %}
+                <button type="submit" 
+                        class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 transform hover:scale-105"
+                        style="background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important; color: white !important;">
+                    {{ _("Next") }}
+                    <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            {% else %}
+                <button type="submit" 
+                        class="inline-flex items-center px-8 py-3 bg-green-600 text-white font-semibold rounded-xl shadow-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 transform hover:scale-105"
+                        style="background: linear-gradient(135deg, #10b981, #059669) !important; color: white !important;">
+                    <i class="fa-solid fa-check mr-2"></i>
+                    {% if user.is_authenticated %}
+                        {{ _("Create Pet Profile") }}
+                    {% else %}
+                        {{ _("Submit") }}
+                    {% endif %}
+                </button>
+            {% endif %}
+        </div>
+    </form>
+    
+    <!-- Back to My Pets -->
+    <div class="text-center mt-6">
+        <a href="{% url 'pet:my_pets' %}" 
+           class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition">
+            <i class="fa-solid fa-arrow-left mr-2"></i>
+            {{ _("Back to My Pets") }}
+        </a>
+    </div>
+</div>
+
+<style>
+/* Custom styles for radio buttons */
+input[type="radio"] {
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.pet-type-btn, .gender-btn, .neutered-btn {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.pet-type-btn:hover, .gender-btn:hover, .neutered-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* When radio is checked, highlight the label */
+input[type="radio"]:checked + .pet-type-label,
+input[type="radio"]:checked ~ .pet-type-label {
+    border-color: #3b82f6;
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+/* Ensure buttons are always visible with strong colors */
+button[type="submit"] {
+    border: none !important;
+    outline: none !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 48px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+button[type="submit"]:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Previous button specific styling */
+button[name="wizard_goto_step"] {
+    background-color: #6b7280 !important;
+    color: white !important;
+}
+
+button[name="wizard_goto_step"]:hover {
+    background-color: #4b5563 !important;
+}
+
+/* Next/Submit button specific styling */
+button[type="submit"]:not([name="wizard_goto_step"]) {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6) !important;
+    color: white !important;
+}
+
+button[type="submit"]:not([name="wizard_goto_step"]):hover {
+    background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+}
+</style>
+{% endblock %}

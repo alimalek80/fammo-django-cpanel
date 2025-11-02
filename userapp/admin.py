@@ -21,10 +21,12 @@ class CustomUserAdmin(UserAdmin):
     )
 
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'first_name', 'last_name', 'subscription_plan')
-    list_filter = ('subscription_plan',)
+    list_display = ('user', 'first_name', 'last_name', 'subscription_plan', 'is_writer')
+    list_filter = ('subscription_plan', 'is_writer')
     search_fields = ('user__email', 'first_name', 'last_name')
     autocomplete_fields = ['subscription_plan']
+    fields = ('user', 'first_name', 'last_name', 'phone', 'address', 'city', 'zip_code', 'country', 'subscription_plan', 'is_writer')
+
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Profile, ProfileAdmin)

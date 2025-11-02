@@ -1,0 +1,97 @@
+<!-- Breed Selection Section -->
+<div class="mb-6">
+  <div class="mb-4 text-lg font-medium text-center opacity-90">
+    {% if form.pet_name %}
+      What breed is {{ form.pet_name }}?
+    {% else %}
+      {{ form.breed.label }}
+    {% endif %}
+  </div>
+  
+  <!-- Breed Dropdown -->
+  <div class="mb-4">
+    <label class="form-control w-full max-w-md mx-auto">
+      <div class="label">
+        <span class="label-text">Select breed</span>
+      </div>
+      {{ form.breed }}
+      {% for error in form.breed.errors %}<div class="text-error text-sm mt-1">{{ error }}</div>{% endfor %}
+    </label>
+  </div>
+  
+  <!-- Unknown Breed Checkbox -->
+  <div class="flex justify-center">
+    <label class="label cursor-pointer">
+      {{ form.unknown_breed }}
+      <span class="label-text ml-2">{{ form.unknown_breed.label }}</span>
+    </label>
+  </div>
+  {% for error in form.unknown_breed.errors %}<div class="text-error text-sm mt-2 text-center">{{ error }}</div>{% endfor %}
+  
+  <!-- Form-level errors -->
+  {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+      <div class="text-error text-sm mt-2 text-center">{{ error }}</div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- Store pet name for JavaScript -->
+<script>
+  window.petNameStep4 = '{{ form.pet_name|default:"" }}';
+  
+  // Step 4: Breed selection handling
+  document.addEventListener('DOMContentLoaded', function() {
+      const breedSelect = document.getElementById('breed-select');
+      const unknownBreedCheckbox = document.getElementById('unknown-breed-checkbox');
+      
+      // Debug: Check if elements are found
+      console.log('Breed select:', breedSelect);
+      console.log('Unknown breed checkbox:', unknownBreedCheckbox);
+      
+      function toggleBreedSelect() {
+          if (unknownBreedCheckbox && breedSelect) {
+              if (unknownBreedCheckbox.checked) {
+                  // Disable and clear breed selection when unknown is checked
+                  breedSelect.disabled = true;
+                  breedSelect.value = '';
+                  breedSelect.parentElement.parentElement.style.opacity = '0.5';
+              } else {
+                  // Enable breed selection when unknown is unchecked
+                  breedSelect.disabled = false;
+                  breedSelect.parentElement.parentElement.style.opacity = '1';
+              }
+          }
+      }
+      
+      // Listen for changes to the unknown breed checkbox
+      if (unknownBreedCheckbox) {
+          unknownBreedCheckbox.addEventListener('change', toggleBreedSelect);
+          
+          // Set initial state based on checkbox
+          toggleBreedSelect();
+      }
+      
+      // Clear unknown breed checkbox when user selects a breed
+      if (breedSelect) {
+          breedSelect.addEventListener('change', function() {
+              if (this.value && unknownBreedCheckbox) {
+                  unknownBreedCheckbox.checked = false;
+                  toggleBreedSelect();
+              }
+          });
+      }
+  });
+</script>
+
+<style>
+  /* Style for disabled breed select */
+  .form-control select:disabled {
+      cursor: not-allowed;
+  }
+  
+  /* Ensure checkbox is properly styled */
+  .checkbox {
+      margin-right: 0.5rem;
+  }
+</style>

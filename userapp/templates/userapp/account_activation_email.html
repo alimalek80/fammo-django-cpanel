@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #007bff; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background-color: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+        .button { display: inline-block; background-color: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+        .pet-info { background-color: #e9ecef; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐾 Welcome to FAMO-PET!</h1>
+        </div>
+        <div class="content">
+            <p>Hi there,</p>
+            
+            {% if is_pet_registration and pet_name %}
+                <p>Thank you for creating a profile for <strong>{{ pet_name }}</strong>! We're excited to help you provide the best nutrition for your furry friend.</p>
+                
+                <div class="pet-info">
+                    <h3>🎉 {{ pet_name }}'s Profile is Ready!</h3>
+                    <p>Once you activate your account, {{ pet_name }}'s complete profile will be saved and you'll have access to:</p>
+                    <ul>
+                        <li>✅ Personalized nutrition recommendations</li>
+                        <li>✅ Health monitoring and reports</li>
+                        <li>✅ Food allergy tracking</li>
+                        <li>✅ Activity level optimization</li>
+                        <li>✅ And much more!</li>
+                    </ul>
+                </div>
+            {% else %}
+                <p>Thank you for joining FAMO-PET! We're excited to help you provide the best care for your pets.</p>
+            {% endif %}
+            
+            <p>To complete your registration and {% if is_pet_registration and pet_name %}activate {{ pet_name }}'s profile{% else %}activate your account{% endif %}, please click the button below:</p>
+            
+            <div style="text-align: center;">
+                <a href="http://{{ domain }}{% url 'activate' uidb64=uid token=token %}" class="button">
+                    {% if is_pet_registration and pet_name %}
+                        🐾 Activate Account & Complete {{ pet_name }}'s Profile
+                    {% else %}
+                        🔓 Activate Your Account
+                    {% endif %}
+                </a>
+            </div>
+            
+            <p><small>If the button doesn't work, copy and paste this link into your browser:</small><br>
+            <code>http://{{ domain }}{% url 'activate' uidb64=uid token=token %}</code></p>
+            
+            {% if is_pet_registration and pet_name %}
+                <p><strong>What happens next?</strong></p>
+                <ol>
+                    <li>Click the activation link above</li>
+                    <li>Log in to your new account</li>
+                    <li>View {{ pet_name }}'s complete profile</li>
+                    <li>Get personalized recommendations instantly!</li>
+                </ol>
+            {% endif %}
+            
+            <p>If you didn't create this account, please ignore this email.</p>
+            
+            <p>Welcome to the FAMO-PET family! 🐕🐱</p>
+        </div>
+        <div class="footer">
+            <p>Best regards,<br>The FAMO-PET Team</p>
+            <p><small>This is an automated email. Please do not reply.</small></p>
+        </div>
+    </div>
+</body>
+</html>

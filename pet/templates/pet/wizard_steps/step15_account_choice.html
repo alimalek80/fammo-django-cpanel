@@ -1,0 +1,239 @@
+<!-- Account Choice Selection Section -->
+<div class="mb-6">
+  <div class="mb-6 text-lg font-medium text-center opacity-90">
+    {% if form.pet_name %}
+      {{ form.pet_name }}'s profile is complete! What would you like to do next?
+    {% else %}
+      Your pet's profile is complete! What would you like to do next?
+    {% endif %}
+  </div>
+  
+  <!-- Hidden Django field for form submission -->
+  <div style="display: none;">
+    {{ form.account_choice }}
+  </div>
+  
+  <!-- Account Choice Options -->
+  <div class="grid grid-cols-1 gap-4 max-w-2xl mx-auto mb-8">
+    <div class="account-choice-option">
+      <!-- Create Account Option -->
+      <button type="button" class="btn btn-outline cursor-pointer account-choice-btn hover:btn-primary transition-all duration-200 p-6 h-auto text-left w-full"
+              data-value="create_account">
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-primary">Create Account & Get Full Report</h3>
+            <div class="text-sm text-gray-600 mt-2">
+              <ul class="list-disc list-inside space-y-1">
+                <li>Save your pet's profile for future updates</li>
+                <li>Get detailed nutrition recommendations</li>
+                <li>Access to premium features and tips</li>
+                <li>Track your pet's health over time</li>
+                <li>Receive personalized email updates</li>
+              </ul>
+            </div>
+            <div class="badge badge-primary mt-3">Recommended</div>
+          </div>
+        </div>
+      </button>
+    </div>
+    
+    <div class="account-choice-option">
+      <!-- Test Report Only Option -->
+      <button type="button" class="btn btn-outline cursor-pointer account-choice-btn hover:btn-secondary transition-all duration-200 p-6 h-auto text-left w-full"
+              data-value="test_report">
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-lg font-bold text-secondary">Just Get Test Report (No Account)</h3>
+            <div class="text-sm text-gray-600 mt-2">
+              <ul class="list-disc list-inside space-y-1">
+                <li>Get basic nutrition recommendations via email</li>
+                <li>No account creation required</li>
+                <li>Quick and simple process</li>
+                <li>Profile data not saved for future use</li>
+              </ul>
+            </div>
+            <div class="badge badge-secondary mt-3">Quick Option</div>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Information Notice -->
+  <div class="alert alert-info mb-6">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <div>
+      <div class="font-bold">Both options are free!</div>
+      <div class="text-sm">Creating an account gives you more features and the ability to update your pet's profile later.</div>
+    </div>
+  </div>
+  
+  <!-- Error Display -->
+  {% for error in form.account_choice.errors %}
+    <div class="text-error text-sm mt-4 text-center">{{ error }}</div>
+  {% endfor %}
+  
+  <!-- Form-level errors -->
+  {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+      <div class="text-error text-sm mt-2 text-center">{{ error }}</div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- Store pet name for JavaScript -->
+<script>
+  window.petNameStep15 = '{{ form.pet_name|default:"" }}';
+  
+  // Step 15: Account choice selection handling
+  document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+          const choiceButtons = document.querySelectorAll('.account-choice-btn');
+          
+          // Find Django radio buttons
+          let radioButtons = document.querySelectorAll('input[type="radio"][name="step15-account_choice"]');
+          
+          // If not found, try finding in the hidden form section
+          if (radioButtons.length === 0) {
+              radioButtons = document.querySelectorAll('input[type="radio"]');
+              // Filter for account choice radio buttons
+              radioButtons = Array.from(radioButtons).filter(rb => 
+                  rb.name && rb.name.includes('account_choice')
+              );
+          }
+          
+          console.log('Found radio buttons:', radioButtons.length);
+          console.log('Found buttons:', choiceButtons.length);
+          
+          function findRadioByValue(value) {
+              return Array.from(radioButtons).find(rb => rb.value === value);
+          }
+          
+          function updateUI() {
+              console.log('Updating UI...');
+              
+              choiceButtons.forEach(button => {
+                  const value = button.dataset.value;
+                  const radio = findRadioByValue(value);
+                  
+                  if (radio) {
+                      console.log(`Button ${value}: radio checked = ${radio.checked}`);
+                      
+                      if (radio.checked) {
+                          button.classList.add('btn-primary');
+                          button.classList.remove('btn-outline');
+                          if (value === 'create_account') {
+                              button.classList.remove('btn-secondary');
+                          } else {
+                              button.classList.add('btn-secondary');
+                              button.classList.remove('btn-primary');
+                          }
+                      } else {
+                          button.classList.remove('btn-primary', 'btn-secondary');
+                          button.classList.add('btn-outline');
+                      }
+                  } else {
+                      console.log(`No radio found for button value: ${value}`);
+                  }
+              });
+          }
+          
+          // Add click handlers to buttons
+          choiceButtons.forEach(button => {
+              button.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  console.log('Button clicked:', this.dataset.value);
+                  
+                  const value = this.dataset.value;
+                  const radio = findRadioByValue(value);
+                  
+                  if (radio) {
+                      console.log('Found radio, setting checked');
+                      
+                      // Uncheck all radios first
+                      radioButtons.forEach(rb => rb.checked = false);
+                      
+                      // Check the selected radio
+                      radio.checked = true;
+                      
+                      // Trigger change event for Django form handling
+                      const event = new Event('change', { bubbles: true });
+                      radio.dispatchEvent(event);
+                      
+                      updateUI();
+                  } else {
+                      console.log('No radio found for value:', value);
+                  }
+              });
+          });
+          
+          // Listen for direct radio changes
+          radioButtons.forEach(radio => {
+              radio.addEventListener('change', function() {
+                  console.log('Radio changed:', this.value, this.checked);
+                  updateUI();
+              });
+          });
+          
+          // Initial UI update to restore visual state from saved data
+          console.log('Performing initial UI update...');
+          updateUI();
+          
+      }, 50);
+  });
+</script>
+
+<style>
+  /* Account choice button styling */
+  .account-choice-btn {
+      border: 2px solid #e5e7eb;
+      transition: all 0.2s ease;
+  }
+  
+  .account-choice-btn:hover:not(.btn-primary):not(.btn-secondary) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .account-choice-btn.btn-primary {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+  
+  .account-choice-btn.btn-secondary {
+      background-color: #6b7280;
+      border-color: #6b7280;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+  }
+  
+  /* Badge styling */
+  .badge {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+  }
+  
+  /* Icon styling */
+  .account-choice-btn svg {
+      transition: all 0.2s ease;
+  }
+  
+  /* Alert styling */
+  .alert {
+      border-radius: 0.5rem;
+  }
+</style>

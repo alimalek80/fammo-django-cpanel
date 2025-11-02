@@ -14,11 +14,15 @@ class Gender(models.Model):
         return self.name
     
 class AgeCategory(models.Model):
-    pet_type = models.ForeignKey(PetType, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
+    pet_type = models.ForeignKey(PetType, on_delete=models.CASCADE, related_name='age_categories')
+    order = models.PositiveIntegerField(default=0, help_text="Controls display order (smallest first)")
+
+    class Meta:
+        ordering = ['order', 'name']
 
     def __str__(self):
-        return f"{self.name} ({self.pet_type})"
+        return f"{self.name} ({self.pet_type.name})"
     
 class Breed(models.Model):
     pet_type = models.ForeignKey(PetType, on_delete=models.CASCADE, related_name='breeds')
@@ -55,19 +59,31 @@ class BodyType(models.Model):
     
 class ActivityLevel(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(max_length=255)
+    description = models.TextField(max_length=255, blank=True)
+    order = models.PositiveIntegerField(default=0)  # Add this field
+
+    class Meta:
+        ordering = ['order', 'name']  # Default ordering
 
     def __str__(self):
         return self.name
 
 class FoodAllergy(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    order = models.PositiveIntegerField(default=0)  # Add this
+
+    class Meta:
+        ordering = ['order', 'name']
 
     def __str__(self):
         return self.name
     
 class HealthIssue(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    order = models.PositiveIntegerField(default=0)  # Add this
+
+    class Meta:
+        ordering = ['order', 'name']
 
     def __str__(self):
         return self.name
@@ -91,6 +107,7 @@ class Pet(models.Model):
     age_months = models.PositiveIntegerField(null=True, blank=True)
     age_weeks = models.PositiveIntegerField(null=True, blank=True)
     breed = models.ForeignKey(Breed, on_delete=models.SET_NULL, null=True, blank=True, related_name='pets')
+    unknown_breed = models.BooleanField(default=False, help_text="Check if breed is unknown")
     food_types = models.ManyToManyField(FoodType, blank=True, related_name='pets')
     food_feeling = models.ForeignKey(FoodFeeling, on_delete=models.SET_NULL, null=True, blank=True, related_name='pets')
     food_importance = models.ForeignKey(FoodImportance, on_delete=models.SET_NULL, null=True, blank=True, related_name='pets')

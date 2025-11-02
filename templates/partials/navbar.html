@@ -3,7 +3,7 @@
 <nav id="main-navbar" class="bg-white shadow-md p-4 fixed w-full z-50 transition-transform duration-300">
     <div class="container mx-auto flex justify-between items-center flex-wrap">
         <!-- Brand Logo/Name -->
-        <a href="{% url 'home' %}" class="flex items-center">
+        <a href="{% url 'core:home' %}" class="flex items-center">
             <img src="{% static 'images/logo.png' %}" alt="FAMO Logo" class="h-10 w-auto mr-2">
         </a>
 
@@ -28,9 +28,21 @@
                     <a href="{% url 'ai_history' %}" class="text-gray-800 hover:text-indigo-600 font-medium transition duration-300 ease-in-out">
                         {% trans "AI History" %}
                     </a>
+                    <a href="{% url 'chat' %}" class="bg-orange-500 text-white hover:bg-orange-600 font-medium px-4 py-2 rounded-full transition duration-300 ease-in-out shadow-md hover:shadow-lg">
+                        {% trans "Chat" %}
+                    </a>
                 {% endif %}
                 <a href="{% url 'blog_list' %}" class="text-gray-800 hover:text-indigo-600 font-medium transition duration-300 ease-in-out">
                     {% trans "Blog" %}
+                </a>
+                <a href="{% url 'core:about' %}" class="text-gray-800 hover:text-indigo-600 font-medium transition duration-300 ease-in-out">
+                    {% trans "About Us" %}
+                </a>
+                <a href="{% url 'core:contact' %}" class="text-gray-800 hover:text-indigo-600 font-medium transition duration-300 ease-in-out">
+                    {% trans "Contact Us" %}
+                </a>
+                <a href="{% url 'core:how_it_works' %}" class="text-gray-800 hover:text-indigo-600 font-medium transition duration-300 ease-in-out">
+                    {% trans "How it Works" %}
                 </a>
             </div>
 
@@ -73,8 +85,12 @@
             <a href="{% url 'pet:create_pet' %}" class="block text-gray-800 hover:text-indigo-600 font-medium py-2 text-center">{% trans "Make Your Plan" %}</a>
             <a href="{% url 'pet:my_pets' %}" class="block text-gray-800 hover:text-indigo-600 font-medium py-2 text-center">{% trans "My Pets" %}</a>
             <a href="{% url 'ai_history' %}" class="block text-gray-800 hover:text-indigo-600 font-medium py-2 text-center">{% trans "AI History" %}</a>
+            <a href="{% url 'chat' %}" class="block bg-orange-500 text-white hover:bg-orange-600 font-medium py-2 rounded-full text-center mx-4 shadow-md hover:shadow-lg transition duration-300 ease-in-out">{% trans "Chat" %}</a>
         {% endif %}
         <a href="{% url 'blog_list' %}" class="block text-gray-800 hover:text-indigo-600 font-medium py-2 text-center">{% trans "Blog" %}</a>
+        <a href="{% url 'core:about' %}" class="block text-gray-800 hover:text-indigo-600 font-medium py-2 text-center">{% trans "About Us" %}</a>
+        <a href="{% url 'core:contact' %}" class="block text-gray-800 hover:text-indigo-600 font-medium py-2 text-center">{% trans "Contact Us" %}</a>
+        <a href="{% url 'core:how_it_works' %}" class="block text-gray-800 hover:text-indigo-600 font-medium py-2 text-center">{% trans "How it Works" %}</a>
 
         {% if user.is_authenticated %}
             <a href="{% url 'dashboard' %}" class="block text-gray-800 hover:text-indigo-600 font-medium py-2 text-sm text-center">

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load socialaccount %}
 
 {% block content %}
 <div class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
@@ -45,6 +46,11 @@
                 {% trans "Login here" %}
             </a>
         </p>
+        <div class="mt-6">
+            <a href="{% provider_login_url 'google' %}" class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md mt-4">
+                <i class="fa-brands fa-google"></i> Continue with Google
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}

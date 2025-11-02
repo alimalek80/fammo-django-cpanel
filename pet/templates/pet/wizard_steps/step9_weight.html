@@ -1,0 +1,302 @@
+<!-- Weight Selection Section -->
+<div class="mb-6">
+  <div class="mb-6 text-lg font-medium text-center opacity-90">
+    {% if form.pet_name %}
+      How much does {{ form.pet_name }} weigh?
+    {% else %}
+      {{ form.weight.label }}
+    {% endif %}
+  </div>
+  
+  <!-- Weight Input and Slider Container -->
+  <div class="max-w-lg mx-auto space-y-6">
+    
+    <!-- Hidden Django field for form submission -->
+    <div style="display: none;">
+      {{ form.weight }}
+    </div>
+    
+    <!-- Weight Input Box -->
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text font-medium">Weight (kg)</span>
+      </label>
+      <div class="relative">
+        <input type="number" 
+               id="weight-input-display" 
+               class="input input-bordered input-lg w-full pr-12 text-center text-2xl font-bold"
+               placeholder="0.0"
+               min="0"
+               max="50"
+               step="0.1">
+        <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">kg</span>
+      </div>
+    </div>
+    
+    <!-- Weight Slider -->
+    <div class="form-control">
+      <label class="label">
+        <span class="label-text font-medium">Drag to adjust weight</span>
+      </label>
+      <div class="w-full">
+        <input type="range" 
+               id="weight-slider" 
+               class="range range-primary range-lg w-full" 
+               min="0" 
+               max="50" 
+               step="0.1" 
+               value="0">
+        <div class="w-full flex justify-between text-xs px-2 mt-2">
+          <span class="font-medium text-gray-600">0 kg</span>
+          <span class="font-medium text-gray-600">25 kg</span>
+          <span class="font-medium text-gray-600">50 kg</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Weight Display Card -->
+    <div class="card bg-base-200 shadow-lg">
+      <div class="card-body text-center py-6">
+        <h3 class="text-sm font-medium text-gray-600 mb-2">Current Weight</h3>
+        <div id="weight-display" class="text-4xl font-bold text-primary">0.0 kg</div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Error Display -->
+  {% for error in form.weight.errors %}
+    <div class="text-error text-sm mt-4 text-center">{{ error }}</div>
+  {% endfor %}
+  
+  <!-- Form-level errors -->
+  {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+      <div class="text-error text-sm mt-2 text-center">{{ error }}</div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- Store pet name for JavaScript -->
+<script>
+  window.petNameStep9 = '{{ form.pet_name|default:"" }}';
+  
+  // Step 9: Weight selection handling
+  document.addEventListener('DOMContentLoaded', function() {
+      const hiddenField = document.querySelector('input[name="step9-weight"]');
+      const inputDisplay = document.getElementById('weight-input-display');
+      const slider = document.getElementById('weight-slider');
+      const weightDisplay = document.getElementById('weight-display');
+      
+      console.log('Step 9 Debug Info:');
+      console.log('Found hidden field:', hiddenField);
+      console.log('Found input display:', inputDisplay);
+      console.log('Found slider:', slider);
+      console.log('Found weight display:', weightDisplay);
+      
+      // Debug the hidden field attributes
+      if (hiddenField) {
+          console.log('Hidden field name:', hiddenField.name);
+          console.log('Hidden field value:', hiddenField.value);
+      }
+      
+      // Initialize values from form data if available
+      let currentWeight = 0;
+      if (hiddenField && hiddenField.value !== '') {
+          currentWeight = parseFloat(hiddenField.value) || 0;
+      }
+      
+      // If no weight is set, set a default minimum weight to help with validation
+      if (currentWeight === 0) {
+          currentWeight = 5.0; // Set a more realistic default weight (5 kg)
+      }
+      
+      console.log('Initial weight set to:', currentWeight);
+      
+      // Set initial values
+      updateAllFields(currentWeight);
+      
+      // Double-check: ensure the field has a value immediately after page load
+      setTimeout(() => {
+          if (hiddenField && (!hiddenField.value || hiddenField.value === '')) {
+              console.log('Field still empty after initialization, forcing update');
+              updateAllFields(5.0);
+          }
+      }, 50);
+      
+      function updateAllFields(weight) {
+          // Ensure weight is within bounds
+          weight = Math.max(0, Math.min(50, weight));
+          
+          console.log('Updating weight to:', weight);
+          
+          // Update all displays
+          inputDisplay.value = weight.toFixed(1);
+          slider.value = weight;
+          weightDisplay.textContent = weight.toFixed(1) + ' kg';
+          
+          // Update hidden Django field
+          if (hiddenField) {
+              hiddenField.value = weight.toFixed(1);
+              console.log('Updated hidden field value:', hiddenField.value);
+              
+              // Trigger change event for validation
+              hiddenField.dispatchEvent(new Event('input', { bubbles: true }));
+              hiddenField.dispatchEvent(new Event('change', { bubbles: true }));
+              
+              // Clear any custom validity
+              hiddenField.setCustomValidity('');
+          } else {
+              console.error('Hidden field not found!');
+          }
+      }
+      
+      // Input field event handler
+      inputDisplay.addEventListener('input', function() {
+          const weight = parseFloat(this.value) || 0;
+          updateAllFields(weight);
+      });
+      
+      // Slider event handler
+      slider.addEventListener('input', function() {
+          const weight = parseFloat(this.value) || 0;
+          updateAllFields(weight);
+      });
+      
+      // Also add change event handlers to ensure form validation triggers
+      inputDisplay.addEventListener('change', function() {
+          const weight = parseFloat(this.value) || 0;
+          updateAllFields(weight);
+      });
+      
+      slider.addEventListener('change', function() {
+          const weight = parseFloat(this.value) || 0;
+          updateAllFields(weight);
+      });
+      
+      // Prevent form submission on enter key in input field
+      inputDisplay.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+              e.preventDefault();
+              this.blur();
+          }
+      });
+      
+      // Format input on blur
+      inputDisplay.addEventListener('blur', function() {
+          const weight = parseFloat(this.value) || 0;
+          updateAllFields(weight);
+      });
+      
+      // Add form submission debugging
+      const form = document.querySelector('form');
+      if (form) {
+          form.addEventListener('submit', function(e) {
+              console.log('Form submission attempted');
+              console.log('Hidden field value at submit:', hiddenField ? hiddenField.value : 'field not found');
+              
+              // Force the field to have a value if it's empty
+              if (hiddenField && (!hiddenField.value || hiddenField.value === '' || hiddenField.value === '0')) {
+                  console.log('Fixing empty weight field');
+                  hiddenField.value = '5.0';
+                  hiddenField.setCustomValidity('');
+              }
+          });
+      }
+      
+      // Add specific Next button debugging
+      setTimeout(() => {
+          const nextButton = document.querySelector('button[type="submit"]:not([name="wizard_goto_step"])');
+          if (nextButton) {
+              console.log('Found Next button:', nextButton);
+              nextButton.addEventListener('click', function(e) {
+                  console.log('Next button clicked');
+                  console.log('Current weight field value:', hiddenField ? hiddenField.value : 'not found');
+                  
+                  // Force update the field one more time before submission
+                  if (hiddenField && (!hiddenField.value || hiddenField.value === '')) {
+                      console.log('Field is empty, setting default value');
+                      const currentSliderValue = slider ? slider.value : '5.0';
+                      updateAllFields(parseFloat(currentSliderValue) || 5.0);
+                  }
+              });
+          } else {
+              console.log('Next button not found');
+          }
+      }, 100);
+  });
+</script>
+
+<style>
+  /* Custom range slider styling */
+  .range {
+      width: 100% !important;
+      height: 0.75rem;
+      background-color: #e5e7eb;
+      border-radius: 0.5rem;
+      appearance: none;
+      outline: none;
+      margin: 0;
+      padding: 0;
+  }
+  
+  .range::-webkit-slider-thumb {
+      appearance: none;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s ease;
+  }
+  
+  .range::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+  
+  .range::-moz-range-thumb {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s ease;
+  }
+  
+  .range::-moz-range-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+  
+  /* Input field styling */
+  #weight-input-display {
+      transition: all 0.2s ease;
+  }
+  
+  #weight-input-display:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  /* Weight display card animation */
+  #weight-display {
+      transition: all 0.2s ease;
+  }
+  
+  /* Remove number input arrows */
+  #weight-input-display::-webkit-outer-spin-button,
+  #weight-input-display::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+  }
+  
+  #weight-input-display[type=number] {
+      appearance: textfield;
+      -moz-appearance: textfield;
+  }
+</style>

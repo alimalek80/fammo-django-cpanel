@@ -1,5 +1,6 @@
 {% extends "userapp/dashboard_base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block dashboard_content %}
 <!-- Main container for My Pets section -->
@@ -11,71 +12,77 @@
             {% trans "My Pets" %}
         </h2>
         <!-- Add New Pet Button -->
-        <a href="{% url 'pet:create_pet' %}" 
+        <a href="{% url 'pet:pet_wizard' %}" 
             class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
             {% trans "Add New Pet" %}
         </a>
     </div>
+
+    <!-- Pet limit info: show user's allowed number of pets -->
+    {% if request.user.is_staff %}
+        <p class="mb-4 text-green-700 font-semibold">{% trans "You can add unlimited pets." %}</p>
+    {% else %}
+        <p class="mb-4 text-indigo-700 font-semibold">
+            {% trans "Your plan allows up to" %} {{ request.user.profile.subscription_plan.pet_limit }} {% trans "pets." %}
+        </p>
+    {% endif %}
 
     {% if pets %}
         <!-- List layout for displaying pets as row cards -->
         <div class="space-y-4">
             {% for pet in pets %}
                 <!-- Single Pet Row Card -->
-                <div class="flex items-center bg-white rounded-xl shadow p-4">
-                    
-                    <!-- Pet Icon -->
-                    <div class="flex-shrink-0 w-16 h-16 flex items-center justify-center rounded-full 
-                                {% if pet.pet_type.name == 'Dog' %}bg-blue-100 text-blue-600{% elif pet.pet_type.name == 'Cat' %}bg-pink-100 text-pink-600{% else %}bg-gray-100 text-gray-600{% endif %}">
-                        {% if pet.pet_type.name == 'Dog' %}
-                            <i class="fa-solid fa-dog text-2xl"></i>
-                        {% elif pet.pet_type.name == 'Cat' %}
-                            <i class="fa-solid fa-cat text-2xl"></i>
-                        {% else %}
-                            <i class="fa-solid fa-paw text-2xl"></i>
-                        {% endif %}
-                    </div>
-
-                    <!-- Pet Details -->
-                    <div class="flex-grow ml-4">
-                        <h3 class="text-lg font-semibold">{{ pet.name }}</h3>
-                        <p class="text-gray-600">
-                            {% if pet.pet_type %}
-                                {{ pet.pet_type.name }}
+                <div class="bg-white rounded-xl shadow p-4 flex flex-col sm:flex-row items-center sm:items-start">
+                    <!-- Pet Icon and Details: stacked on mobile, row on desktop -->
+                    <div class="flex flex-col items-center sm:flex-row sm:items-center sm:space-x-4 w-full sm:w-auto">
+                        <div class="flex-shrink-0 w-16 h-16 flex items-center justify-center rounded-full 
+                            {% if pet.pet_type.name == 'Dog' %}bg-blue-100 text-blue-600{% elif pet.pet_type.name == 'Cat' %}bg-pink-100 text-pink-600{% else %}bg-gray-100 text-gray-600{% endif %}">
+                            {% if pet.pet_type.name == 'Dog' %}
+                                <i class="fa-solid fa-dog text-2xl"></i>
+                            {% elif pet.pet_type.name == 'Cat' %}
+                                <i class="fa-solid fa-cat text-2xl"></i>
                             {% else %}
-                                {% trans "No type selected" %}
+                                <i class="fa-solid fa-paw text-2xl"></i>
                             {% endif %}
-                        </p>
+                        </div>
+                        <div class="mt-2 sm:mt-0 sm:ml-4 text-center sm:text-left">
+                            <h3 class="text-lg font-semibold">
+                                <a href="{% url 'pet:pet_detail' pk=pet.id %}" class="text-blue-600 hover:underline">{{ pet.name }}</a>
+                            </h3>
+                            <p class="text-gray-600">
+                                {% if pet.pet_type %}
+                                    {{ pet.pet_type.name }}
+                                {% else %}
+                                    {% trans "No type selected" %}
+                                {% endif %}
+                            </p>
+                        </div>
                     </div>
-
-                    <!-- Edit, Delete, AI Meal Buttons -->
-                    <div class="flex flex-wrap gap-2">
-                        <!-- Edit Button -->
+                    <!-- Buttons: stacked on mobile, row on desktop -->
+                    <div class="flex flex-col w-full mt-4 sm:mt-0 sm:ml-auto sm:w-auto sm:flex-row sm:items-center sm:gap-2 gap-2">
                         <a href="{% url 'pet:edit_pet' pk=pet.id %}"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-center">
                             {% trans "Edit" %}
                         </a>
-
-                        <!-- Delete Button -->
                         <form method="post" action="{% url 'pet:delete_pet' pet.id %}" 
-                            onsubmit="return confirm('{% trans "Are you sure you want to delete this pet?" %}');">
+                            onsubmit="return confirm('{% trans "Are you sure you want to delete this pet?" %}');" class="w-full sm:w-auto">
                             {% csrf_token %}
-                            <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                            <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
                                 {% trans "Delete" %}
                             </button>
                         </form>
-
-                        <!-- Generate AI Meal Button -->
-                        <a href="{% url 'generate_meal' pet.id %}" 
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                        <button 
+                            type="button"
+                            data-url="{% url 'generate_meal' pet.id %}" 
+                            class="ai-action w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
                             {% trans "AI Meal" %}
-                        </a>
-
-                        <!-- Generate AI Health Button -->
-                        <a href="{% url 'generate_health' pet.id %}" 
-                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                        </button>
+                        <button 
+                            type="button"
+                            data-url="{% url 'generate_health' pet.id %}" 
+                            class="ai-action w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
                             {% trans "AI Health" %}
-                        </a>
+                        </button>
                     </div>
                 </div>
             {% endfor %}
@@ -87,5 +94,43 @@
         </p>
     {% endif %}
 
+    <!-- Loader Overlay (hidden by default) -->
+    <div id="ai-loader-overlay" style="display:none"
+         class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center">
+            <svg class="animate-spin h-10 w-10 text-indigo-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <strong>{% trans "Processing, please wait..." %}</strong>
+            <p class="text-gray-500 mb-4">{% trans "Your AI request is being generated. This usually takes a few seconds." %}</p>
+            <img src="{% static 'images\pet-waiting.gif' %}" alt="Pet waiting" class="w-16 h-16 mb-2 rounded-full shadow">
+            <p class="inline-block text-lg font-bold text-white uppercase tracking-wider bg-green-600 py-1 px-4 rounded-full shadow-xl mb-2">
+            Powered by the FAMMO Diet Engine
+        </p>
+        </div>
+    </div>
+    
+    
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Select all AI Meal and AI Health buttons (now <button> with .ai-action)
+    document.querySelectorAll('button.ai-action').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Show loader
+            document.getElementById('ai-loader-overlay').style.display = 'flex';
+            // Redirect after a very short delay to allow loader to render
+            setTimeout(() => {
+                window.location = btn.getAttribute('data-url');
+            }, 200);
+        });
+    });
+});
+</script>
 {% endblock %}

@@ -1,10 +1,26 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% block title %}{% trans "Blog" %} | FAMO{% endblock %}
+{% load markdownify %}
+{% block title %}{% trans "Blog" %} | FAMMO{% endblock %}
 
 {% block content %}
 <section class="mb-12">
-    <h1 class="text-4xl font-extrabold text-indigo-700 mb-8 text-center">{% trans "FAMO Blog" %}</h1>
+    <h1 class="text-4xl font-extrabold text-indigo-700 mb-8 text-center">{% trans "FAMMO Blog" %}</h1>
+    
+     <!-- Category Filter Buttons -->
+    <div class="flex flex-wrap justify-center gap-2 mb-8">
+        <a href="{% url 'blog_list' %}"
+           class="btn btn-sm {% if not selected_slug %}btn-primary text-white{% else %}btn-ghost{% endif %}">
+            {% trans "All" %}
+        </a>
+        {% for cat in categories %}
+            <a href="?category={{ cat.slug }}"
+               class="btn btn-sm {% if selected_slug == cat.slug %}btn-primary text-white{% else %}btn-ghost{% endif %}">
+                {{ cat.name }}
+            </a>
+        {% endfor %}
+    </div>
+    
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {% for post in posts %}
         <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col">
@@ -17,20 +33,24 @@
                 <a href="{% url 'blog_detail' post.slug %}">
                     <h2 class="text-2xl font-bold text-gray-800 hover:text-indigo-600 mb-2">{{ post.title }}</h2>
                 </a>
-                <p class="text-gray-600 mb-4 line-clamp-3">{{ post.content|truncatewords:30 }}</p>
+                <p class="text-gray-600 mb-4 line-clamp-3">
+                  {{ post.content|markdownify|striptags|truncatewords:30 }}
+                </p>
                 <div class="flex items-center justify-between mt-auto">
                     <div class="flex items-center space-x-2 text-sm text-gray-500">
                         <i class="fa-solid fa-user"></i>
                         <span>
-                            {% if post.author.get_full_name %}
-                                {{ post.author.get_full_name }}
+                            {% if post.author.profile.first_name or post.author.profile.last_name %}
+                                {{ post.author.profile.first_name }} {{ post.author.profile.last_name }}
                             {% else %}
                                 {{ post.author.email }}
                             {% endif %}
                         </span>
-                        <span>·</span>
+                        <span>&middot;</span>
                         <i class="fa-solid fa-calendar"></i>
-                        <span>{{ post.created_at|date:"M d, Y" }}</span>
+                        <span>{{ post.published_at|date:"M d, Y" }}</span>
+                        <i class="fa-solid fa-eye"></i>
+                        <span>{{ post.views }}</span>
                     </div>
                     <div class="flex items-center space-x-1 text-yellow-500">
                         {% with avg=post.average_rating %}

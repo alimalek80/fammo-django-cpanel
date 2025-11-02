@@ -1,0 +1,474 @@
+{% extends 'userapp/dashboard_base.html' %}
+{% load i18n %}
+
+{% block dashboard_content %}
+<div class="w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-xl p-10">
+    <h2 class="text-3xl font-extrabold mb-6 text-gray-800 text-center">{% trans "Admin Statistics" %}</h2>
+
+    <!-- Sticky report actions bar -->
+    <div class="sticky top-0 z-20 mb-8 sticky-actions">
+        <div class="bg-white/90 backdrop-blur border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between shadow-sm">
+            <div class="text-sm font-semibold text-slate-700">{% trans "Report Actions" %}</div>
+            <div class="flex items-center gap-3">
+                <button id="downloadAllChartsPdf" aria-label="Download all charts as PDF" class="z-30 btn btn-gradient-purple btn-elevated ring-offset-2 ring-offset-white hover:opacity-95 transition">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    {% trans "Download All Charts (PDF)" %}
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-10">
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 flex flex-col items-center shadow hover:shadow-lg transition">
+            <i class="fa-solid fa-users text-4xl text-blue-500 mb-3"></i>
+            <div class="text-lg font-semibold text-blue-800">{% trans "Total Users" %}</div>
+            <div class="text-3xl font-bold text-blue-700">{{ total_users }}</div>
+        </div>
+        <div class="bg-green-50 border border-green-200 rounded-xl p-6 flex flex-col items-center shadow hover:shadow-lg transition">
+            <i class="fa-solid fa-paw text-4xl text-green-500 mb-3"></i>
+            <div class="text-lg font-semibold text-green-800">{% trans "Total Pets" %}</div>
+            <div class="text-3xl font-bold text-green-700">{{ total_pets }}</div>
+        </div>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6 flex flex-col items-center shadow hover:shadow-lg transition">
+            <i class="fa-solid fa-dog text-4xl text-yellow-500 mb-3"></i>
+            <div class="text-lg font-semibold text-yellow-800">{% trans "Dogs" %}</div>
+            <div class="text-3xl font-bold text-yellow-700">{{ total_dogs }}</div>
+        </div>
+        <div class="bg-pink-50 border border-pink-200 rounded-xl p-6 flex flex-col items-center shadow hover:shadow-lg transition">
+            <i class="fa-solid fa-cat text-4xl text-pink-500 mb-3"></i>
+            <div class="text-lg font-semibold text-pink-800">{% trans "Cats" %}</div>
+            <div class="text-3xl font-bold text-pink-700">{{ total_cats }}</div>
+        </div>
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6 flex flex-col items-center shadow hover:shadow-lg transition">
+            <i class="fa-solid fa-bowl-food text-4xl text-indigo-500 mb-3"></i>
+            <div class="text-lg font-semibold text-indigo-800">{% trans "AI Meals" %}</div>
+            <div class="text-3xl font-bold text-indigo-700">{{ total_ai_meals }}</div>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-xl p-6 flex flex-col items-center shadow hover:shadow-lg transition">
+            <i class="fa-solid fa-heart-pulse text-4xl text-red-500 mb-3"></i>
+            <div class="text-lg font-semibold text-red-800">{% trans "AI Health Reports" %}</div>
+            <div class="text-3xl font-bold text-red-700">{{ total_ai_health }}</div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-xl p-8 shadow flex flex-col items-center">
+        <div class="flex justify-between items-center mb-6 w-full">
+            <h3 class="text-2xl font-bold text-gray-800">{% trans "Users with AI Requests by Date" %}</h3>
+            <select id="aiRequestsFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="7">{% trans "Last 7 Days" %}</option>
+                <option value="30" selected>{% trans "Last 30 Days" %}</option>
+                <option value="month">{% trans "This Month" %}</option>
+                <option value="90">{% trans "Last 3 Months" %}</option>
+                <option value="180">{% trans "Last 6 Months" %}</option>
+                <option value="360">{% trans "Last 360 Days" %}</option>
+            </select>
+        </div>
+        <div class="w-full max-w-2xl">
+            <canvas id="countryChart" width="400" height="200"></canvas>
+            <div class="mt-4 flex justify-end">
+                <button id="downloadAiRequestsPdf" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    {% trans "Download PDF" %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Registration by Date Chart -->
+    <div class="bg-white border border-gray-200 rounded-xl p-8 shadow flex flex-col items-center mt-8">
+        <div class="flex justify-between items-center mb-6 w-full">
+            <h3 class="text-2xl font-bold text-gray-800">{% trans "User Registrations by Date" %}</h3>
+            <div class="flex items-center gap-3">
+                <select id="registrationDateFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="7">{% trans "Last 7 Days" %}</option>
+                    <option value="30" selected>{% trans "Last 30 Days" %}</option>
+                    <option value="month">{% trans "This Month" %}</option>
+                    <option value="90">{% trans "Last 3 Months" %}</option>
+                    <option value="180">{% trans "Last 6 Months" %}</option>
+                    <option value="360">{% trans "Last 360 Days" %}</option>
+                </select>
+                <button id="downloadRegistrationDatePdf" aria-label="Download registrations by date as PDF" class="z-10 btn btn-gradient-emerald btn-elevated ring-offset-2 ring-offset-white hover:opacity-95 transition">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    {% trans "Download PDF" %}
+                </button>
+            </div>
+        </div>
+        <div class="w-full max-w-4xl">
+            <canvas id="registrationDateChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- User Registration by Location Chart -->
+    <div class="bg-white border border-gray-200 rounded-xl p-8 shadow flex flex-col items-center mt-8">
+        <div class="flex justify-between items-center mb-6 w-full">
+            <h3 class="text-2xl font-bold text-gray-800">{% trans "User Registrations by Country" %}</h3>
+            <select id="registrationCountryFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="7">{% trans "Last 7 Days" %}</option>
+                <option value="30" selected>{% trans "Last 30 Days" %}</option>
+                <option value="month">{% trans "This Month" %}</option>
+                <option value="90">{% trans "Last 3 Months" %}</option>
+                <option value="180">{% trans "Last 6 Months" %}</option>
+                <option value="360">{% trans "Last 360 Days" %}</option>
+            </select>
+        </div>
+        <div class="w-full max-w-2xl">
+            <canvas id="registrationCountryChart" width="400" height="200"></canvas>
+            <div class="mt-4 flex justify-end">
+                <button id="downloadRegistrationCountryPdf" class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    {% trans "Download PDF" %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex gap-4 mb-8 justify-center mt-8">
+        <a href="{% url 'pet:export_pets_csv' %}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 transition">
+            <i class="fa-solid fa-file-csv"></i>
+            {% trans "Download Pets CSV" %}
+        </a>
+        <a href="{% url 'export_users_csv' %}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-300 transition">
+            <i class="fa-solid fa-file-csv"></i>
+            {% trans "Download Users CSV" %}
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script>
+    // Store chart instances
+    let aiRequestsChart, registrationDateChart, registrationCountryChart;
+    
+    // Initialize all charts with default data
+    function initCharts() {
+        // AI Requests by Country Chart
+        const ctxAI = document.getElementById('countryChart').getContext('2d');
+        aiRequestsChart = new Chart(ctxAI, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Users with AI Requests',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true, position: 'top' }
+                },
+                scales: {
+                    x: { ticks: { color: '#334155', font: { weight: 'bold' } } },
+                    y: { beginAtZero: true, ticks: { color: '#334155', font: { weight: 'bold' }, stepSize: 1 } }
+                }
+            }
+        });
+
+        // User Registrations by Date Chart (Line Chart)
+        const ctxDate = document.getElementById('registrationDateChart').getContext('2d');
+        registrationDateChart = new Chart(ctxDate, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'New Users',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: { 
+                        ticks: { 
+                            color: '#334155', 
+                            font: { weight: 'bold' },
+                            maxRotation: 45,
+                            minRotation: 45
+                        } 
+                    },
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            color: '#334155', 
+                            font: { weight: 'bold' },
+                            stepSize: 1
+                        } 
+                    }
+                }
+            }
+        });
+
+        // User Registrations by Country Chart (Horizontal Bar Chart)
+        const ctxCountry = document.getElementById('registrationCountryChart').getContext('2d');
+        registrationCountryChart = new Chart(ctxCountry, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Users',
+                    data: [],
+                    backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            color: '#334155', 
+                            font: { weight: 'bold' },
+                            stepSize: 1
+                        } 
+                    },
+                    y: { 
+                        ticks: { 
+                            color: '#334155', 
+                            font: { weight: 'bold' } 
+                        } 
+                    }
+                }
+            }
+        });
+        
+        // Load initial data for all charts
+        updateChart('ai_requests', '30');
+        updateChart('user_registrations', '30');
+        updateChart('user_countries', '30');
+    }
+    
+    // Function to fetch and update chart data
+    function updateChart(chartType, period) {
+        const url = "{% url 'admin_dashboard_chart_data' %}?chart=" + chartType + "&period=" + period;
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (chartType === 'ai_requests') {
+                    aiRequestsChart.data.labels = data.labels;
+                    aiRequestsChart.data.datasets[0].data = data.data;
+                    aiRequestsChart.update();
+                } else if (chartType === 'user_registrations') {
+                    registrationDateChart.data.labels = data.labels;
+                    registrationDateChart.data.datasets[0].data = data.data;
+                    registrationDateChart.update();
+                } else if (chartType === 'user_countries') {
+                    registrationCountryChart.data.labels = data.labels;
+                    registrationCountryChart.data.datasets[0].data = data.data;
+                    registrationCountryChart.update();
+                }
+            })
+            .catch(error => console.error('Error fetching chart data:', error));
+    }
+    
+    // Event listeners for filter dropdowns
+    document.addEventListener('DOMContentLoaded', function() {
+        initCharts();
+        
+        document.getElementById('aiRequestsFilter').addEventListener('change', function() {
+            updateChart('ai_requests', this.value);
+        });
+        
+        document.getElementById('registrationDateFilter').addEventListener('change', function() {
+            updateChart('user_registrations', this.value);
+        });
+        
+        document.getElementById('registrationCountryFilter').addEventListener('change', function() {
+            updateChart('user_countries', this.value);
+        });
+
+        // PDF export helpers
+        const { jsPDF } = window.jspdf;
+
+        function formatGeneratedAt() {
+            const d = new Date();
+            return d.toLocaleString();
+        }
+
+        function addHeader(doc, title, periodLabel) {
+            doc.setFontSize(16);
+            doc.text(title, 10, 15);
+            doc.setFontSize(11);
+            doc.text('Period: ' + periodLabel, 10, 22);
+            doc.text('Generated: ' + formatGeneratedAt(), 10, 28);
+            // Divider line
+            doc.setDrawColor(200);
+            doc.line(10, 30, doc.internal.pageSize.getWidth() - 10, 30);
+        }
+
+        function addChartImage(doc, canvas, topMarginMm = 35) {
+            const imgData = canvas.toDataURL('image/png', 1.0);
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 10;
+            const maxWidth = pageWidth - margin * 2;
+            // Maintain aspect ratio using canvas dimensions
+            const ratio = canvas.height / canvas.width;
+            let imgWidth = maxWidth;
+            let imgHeight = imgWidth * ratio;
+            // If too tall, shrink to fit
+            if (imgHeight > (pageHeight - topMarginMm - margin)) {
+                imgHeight = pageHeight - topMarginMm - margin;
+                imgWidth = imgHeight / ratio;
+            }
+            const x = (pageWidth - imgWidth) / 2;
+            const y = topMarginMm;
+            doc.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
+        }
+
+        function exportSingleChartPDF(chart, title, periodLabel, filename) {
+            const doc = new jsPDF('p', 'mm', 'a4');
+            addHeader(doc, title, periodLabel);
+            addChartImage(doc, chart.canvas, 35);
+            doc.save(filename);
+        }
+
+        function getSelectedText(selectEl) {
+            return selectEl.options[selectEl.selectedIndex].textContent.trim();
+        }
+
+        // Single chart buttons
+        document.getElementById('downloadAiRequestsPdf').addEventListener('click', function() {
+            const periodLabel = getSelectedText(document.getElementById('aiRequestsFilter'));
+            exportSingleChartPDF(
+                aiRequestsChart,
+                'Users with AI Requests by Date',
+                periodLabel,
+                'ai-requests-users.pdf'
+            );
+        });
+
+        document.getElementById('downloadRegistrationDatePdf').addEventListener('click', function() {
+            const periodLabel = getSelectedText(document.getElementById('registrationDateFilter'));
+            exportSingleChartPDF(
+                registrationDateChart,
+                'User Registrations by Date',
+                periodLabel,
+                'user-registrations-by-date.pdf'
+            );
+        });
+
+        document.getElementById('downloadRegistrationCountryPdf').addEventListener('click', function() {
+            const periodLabel = getSelectedText(document.getElementById('registrationCountryFilter'));
+            exportSingleChartPDF(
+                registrationCountryChart,
+                'User Registrations by Country',
+                periodLabel,
+                'user-registrations-by-country.pdf'
+            );
+        });
+
+        // All charts button
+        document.getElementById('downloadAllChartsPdf').addEventListener('click', async function() {
+            const doc = new jsPDF('p', 'mm', 'a4');
+
+            // Fetch KPIs for cover page using selected periods
+            const usersPeriod = document.getElementById('registrationDateFilter').value;
+            const aiPeriod = document.getElementById('aiRequestsFilter').value;
+            const kpiUrl = "{% url 'admin_dashboard_kpis' %}?users_period=" + usersPeriod + "&ai_period=" + aiPeriod;
+            let kpis = null;
+            try {
+                const res = await fetch(kpiUrl);
+                kpis = await res.json();
+            } catch (e) {
+                console.error('Failed to fetch KPIs', e);
+            }
+
+            // Cover Page
+            doc.setFontSize(18);
+            doc.text('FAMO Dashboard Report', 10, 18);
+            doc.setFontSize(11);
+            doc.text('Generated: ' + formatGeneratedAt(), 10, 26);
+            doc.setDrawColor(200);
+            doc.line(10, 30, doc.internal.pageSize.getWidth() - 10, 30);
+
+            // Totals block
+            let y = 42;
+            doc.setFontSize(14);
+            doc.text('Key Metrics (Totals)', 10, y);
+            y += 8;
+
+            if (kpis && kpis.totals) {
+                const totals = kpis.totals;
+                const col1x = 12, col2x = 105; // two columns
+                const lineH = 8;
+                doc.setFontSize(12);
+                doc.text('Total Users: ' + (totals.users ?? '-'), col1x, y);
+                doc.text('Total Pets: ' + (totals.pets ?? '-'), col2x, y);
+                y += lineH;
+                doc.text('Total AI Requests: ' + (totals.ai_requests ?? '-'), col1x, y);
+                doc.text('Dogs: ' + (totals.dogs ?? '-') + '   Cats: ' + (totals.cats ?? '-'), col2x, y);
+                y += lineH;
+                doc.text('AI Meals: ' + (totals.ai_meals ?? '-'), col1x, y);
+                doc.text('AI Health Reports: ' + (totals.ai_health ?? '-'), col2x, y);
+                y += lineH + 4;
+            }
+
+            // Growth block
+            if (kpis && kpis.growth) {
+                doc.setFontSize(14);
+                doc.text('Growth (current vs previous equal period)', 10, y);
+                y += 8;
+                const g = kpis.growth;
+                doc.setFontSize(12);
+                if (g.users) {
+                    const up = g.users.percent >= 0 ? '+' : '';
+                    doc.text(`Users (period ${g.users.period}): ${g.users.current} vs ${g.users.previous} (${up}${g.users.percent}% )`, 12, y);
+                    y += 8;
+                }
+                if (g.ai_requests) {
+                    const up2 = g.ai_requests.percent >= 0 ? '+' : '';
+                    doc.text(`AI Requests (period ${g.ai_requests.period}): ${g.ai_requests.current} vs ${g.ai_requests.previous} (${up2}${g.ai_requests.percent}% )`, 12, y);
+                    y += 8;
+                }
+            }
+
+            // Charts pages
+            doc.addPage();
+            const periodAI = getSelectedText(document.getElementById('aiRequestsFilter'));
+            addHeader(doc, 'Users with AI Requests by Date', periodAI);
+            addChartImage(doc, aiRequestsChart.canvas, 35);
+
+            doc.addPage();
+            const periodDate = getSelectedText(document.getElementById('registrationDateFilter'));
+            addHeader(doc, 'User Registrations by Date', periodDate);
+            addChartImage(doc, registrationDateChart.canvas, 35);
+
+            doc.addPage();
+            const periodCountry = getSelectedText(document.getElementById('registrationCountryFilter'));
+            addHeader(doc, 'User Registrations by Country', periodCountry);
+            addChartImage(doc, registrationCountryChart.canvas, 35);
+
+            doc.save('dashboard-charts-report.pdf');
+        });
+    });
+</script>
+</script>
+{% endblock %}

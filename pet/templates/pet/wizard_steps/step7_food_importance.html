@@ -1,0 +1,120 @@
+<!-- Food Importance Selection Section -->
+<div class="mb-6">
+  <div class="mb-6 text-lg font-medium text-center opacity-90">
+    {% if form.pet_name %}
+      What is the most important thing about {{ form.pet_name }}'s food?
+    {% else %}
+      {{ form.food_importance.label }}
+    {% endif %}
+  </div>
+  
+  <!-- Food Importance Options -->
+  <div class="grid grid-cols-1 gap-4 max-w-2xl mx-auto">
+    {% for choice in form.food_importance %}
+      <label class="btn btn-outline btn-lg cursor-pointer food-importance-btn hover:btn-primary transition-all duration-200 p-6 h-auto text-left">
+        {{ choice.tag }}
+        <span class="ml-4 text-xl font-bold">{{ choice.choice_label }}</span>
+      </label>
+    {% endfor %}
+  </div>
+  
+  <!-- Error Display -->
+  {% for error in form.food_importance.errors %}
+    <div class="text-error text-sm mt-4 text-center">{{ error }}</div>
+  {% endfor %}
+  
+  <!-- Form-level errors -->
+  {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+      <div class="text-error text-sm mt-2 text-center">{{ error }}</div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- Store pet name for JavaScript -->
+<script>
+  window.petNameStep7 = '{{ form.pet_name|default:"" }}';
+  
+  // Step 7: Food importance selection handling (matching Step 6 pattern)
+  document.addEventListener('DOMContentLoaded', function() {
+      const foodImportanceButtons = document.querySelectorAll('.food-importance-btn');
+      
+      function updateButtonStates() {
+          foodImportanceButtons.forEach(function(button) {
+              const radio = button.querySelector('input[type="radio"]');
+              if (radio && radio.checked) {
+                  button.classList.add('btn-primary');
+                  button.classList.remove('btn-outline');
+              } else {
+                  button.classList.remove('btn-primary');
+                  button.classList.add('btn-outline');
+              }
+          });
+      }
+      
+      // Add click handlers to buttons
+      foodImportanceButtons.forEach(function(button) {
+          button.addEventListener('click', function() {
+              const radio = this.querySelector('input[type="radio"]');
+              if (radio) {
+                  // Uncheck all other radios first
+                  document.querySelectorAll('input[name="food_importance"]').forEach(function(r) {
+                      r.checked = false;
+                  });
+                  // Check this radio
+                  radio.checked = true;
+                  updateButtonStates();
+              }
+          });
+      });
+      
+      // Set initial button states
+      updateButtonStates();
+      
+      // Listen for direct radio changes (in case user clicks radio directly)
+      document.querySelectorAll('input[name="food_importance"]').forEach(function(radio) {
+          radio.addEventListener('change', updateButtonStates);
+      });
+  });
+</script>
+
+<style>
+  /* Hide the actual radio buttons but keep them functional */
+  .food-importance-btn input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+  }
+  
+  /* Ensure button content is properly styled */
+  .food-importance-btn {
+      justify-content: flex-start !important;
+      text-align: left !important;
+  }
+  
+  /* Selected state styling - DaisyUI handles most of this with btn-primary */
+  .food-importance-btn.btn-primary {
+      background-color: #3b82f6 !important;
+      color: white !important;
+      border-color: #3b82f6 !important;
+  }
+  
+  /* Ensure text inside selected button is visible */
+  .food-importance-btn.btn-primary * {
+      color: white !important;
+  }
+  
+  /* Hover state */
+  .food-importance-btn:hover:not(.btn-primary) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-color: #3b82f6 !important;
+      background-color: #eff6ff !important;
+  }
+  
+  /* Focus state for accessibility */
+  .food-importance-btn:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+  }
+</style>

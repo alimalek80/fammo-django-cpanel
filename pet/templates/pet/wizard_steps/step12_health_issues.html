@@ -1,0 +1,245 @@
+<!-- Health Issues Selection Section -->
+<div class="mb-6">
+  <div class="mb-6 text-lg font-medium text-center opacity-90">
+    {% if form.pet_name %}
+      Does {{ form.pet_name }} have any health issues?
+    {% else %}
+      {{ form.health_issues.label }}
+    {% endif %}
+  </div>
+  
+  <!-- Selection Limit Notice -->
+  <div class="alert alert-info mb-6">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <span>Select up to 4 health issues that apply.</span>
+  </div>
+  
+  <!-- Hidden Django fields for form submission -->
+  <div style="display: none;">
+    {{ form.health_issues }}
+  </div>
+  
+  <!-- Health Issues Options - Alternative approach using field.choices -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-4xl mx-auto mb-8">
+    {% for value, label in form.health_issues.field.choices %}
+      <div class="health-issue-option">
+        <!-- Custom button -->
+        <button type="button" class="btn btn-outline cursor-pointer health-issue-btn hover:btn-primary transition-all duration-200 p-4 h-auto text-center w-full"
+                data-value="{{ value }}">
+          <span class="text-sm font-medium">{{ label }}</span>
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Selected Count Display -->
+  <div class="text-center mb-6">
+    <div class="badge badge-primary badge-lg">
+      <span id="selected-count">0</span> / 4 selected
+    </div>
+  </div>
+  
+  <!-- Error Display -->
+  {% for error in form.health_issues.errors %}
+    <div class="text-error text-sm mt-4 text-center">{{ error }}</div>
+  {% endfor %}
+  
+  <!-- Form-level errors -->
+  {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+      <div class="text-error text-sm mt-2 text-center">{{ error }}</div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- Store pet name for JavaScript -->
+<script>
+  window.petNameStep12 = '{{ form.pet_name|default:"" }}';
+  
+  // Step 12: Health issues selection handling
+  document.addEventListener('DOMContentLoaded', function() {
+      // Wait for Django form to be fully rendered (reduced delay for better responsiveness)
+      setTimeout(function() {
+          const issueButtons = document.querySelectorAll('.health-issue-btn');
+          const selectedCountDisplay = document.getElementById('selected-count');
+          const MAX_SELECTIONS = 4;
+          
+          // Find Django checkboxes - they might be in different containers
+          let checkboxes = document.querySelectorAll('input[type="checkbox"][name="step12-health_issues"]');
+          
+          // If not found, try finding in the hidden form section
+          if (checkboxes.length === 0) {
+              checkboxes = document.querySelectorAll('input[type="checkbox"]');
+              // Filter for health issues checkboxes
+              checkboxes = Array.from(checkboxes).filter(cb => 
+                  cb.name && cb.name.includes('health_issues')
+              );
+          }
+          
+          console.log('Found checkboxes:', checkboxes.length);
+          console.log('Found buttons:', issueButtons.length);
+          
+          // Debug: Log button data values
+          issueButtons.forEach((btn, index) => {
+              console.log(`Button ${index}: data-value="${btn.dataset.value}"`);
+          });
+          
+          // Debug: Log checkbox values
+          checkboxes.forEach((cb, index) => {
+              console.log(`Checkbox ${index}: value="${cb.value}", name="${cb.name}", checked=${cb.checked}`);
+          });
+          
+          // If still no checkboxes found, log all inputs for debugging
+          if (checkboxes.length === 0) {
+              console.log('All inputs found:', document.querySelectorAll('input'));
+          }
+          
+          function getSelectedCheckboxes() {
+              return Array.from(checkboxes).filter(cb => cb.checked);
+          }
+          
+          function getSelectedCount() {
+              return getSelectedCheckboxes().length;
+          }
+          
+          function findCheckboxByValue(value) {
+              return Array.from(checkboxes).find(cb => cb.value === value);
+          }
+          
+          function updateUI() {
+              const selectedCount = getSelectedCount();
+              console.log('Updating UI, selected count:', selectedCount);
+              
+              issueButtons.forEach(button => {
+                  const value = button.dataset.value;
+                  const checkbox = findCheckboxByValue(value);
+                  
+                  if (checkbox) {
+                      console.log(`Button ${value}: checkbox checked = ${checkbox.checked}`);
+                      
+                      if (checkbox.checked) {
+                          button.classList.add('btn-primary');
+                          button.classList.remove('btn-outline');
+                      } else {
+                          button.classList.remove('btn-primary');
+                          button.classList.add('btn-outline');
+                      }
+                      
+                      // Disable buttons if max reached and this button isn't selected
+                      if (selectedCount >= MAX_SELECTIONS && !checkbox.checked) {
+                          button.classList.add('btn-disabled');
+                          button.disabled = true;
+                      } else {
+                          button.classList.remove('btn-disabled');
+                          button.disabled = false;
+                      }
+                  } else {
+                      console.log(`No checkbox found for button value: ${value}`);
+                  }
+              });
+              
+              // Update count display
+              if (selectedCountDisplay) {
+                  selectedCountDisplay.textContent = selectedCount;
+              }
+          }
+          
+          // Add click handlers to buttons
+          issueButtons.forEach(button => {
+              button.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  console.log('Button clicked:', this.dataset.value);
+                  
+                  const value = this.dataset.value;
+                  const checkbox = findCheckboxByValue(value);
+                  
+                  if (checkbox) {
+                      console.log('Found checkbox, current state:', checkbox.checked);
+                      
+                      if (checkbox.checked) {
+                          // Remove selection
+                          checkbox.checked = false;
+                          console.log('Unchecked checkbox');
+                      } else if (getSelectedCount() < MAX_SELECTIONS) {
+                          // Add selection if under limit
+                          checkbox.checked = true;
+                          console.log('Checked checkbox');
+                      } else {
+                          console.log('Max selections reached, cannot select more');
+                      }
+                      
+                      // Trigger change event for Django form handling
+                      const event = new Event('change', { bubbles: true });
+                      checkbox.dispatchEvent(event);
+                      
+                      updateUI();
+                  } else {
+                      console.log('No checkbox found for value:', value);
+                  }
+              });
+          });
+          
+          // Listen for direct checkbox changes
+          checkboxes.forEach(checkbox => {
+              checkbox.addEventListener('change', function() {
+                  console.log('Checkbox changed:', this.value, this.checked);
+                  updateUI();
+              });
+          });
+          
+          // Initial UI update to restore visual state from saved data
+          console.log('Performing initial UI update...');
+          updateUI();
+          
+      }, 50); // Minimal delay to ensure form is ready while maintaining responsiveness
+  });
+</script>
+
+<style>
+  /* Hide the actual checkboxes but keep them functional */
+  .health-issue-btn input[type="checkbox"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+  }
+  
+  /* Health issue button styling */
+  .health-issue-btn {
+      min-height: 3rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #e5e7eb;
+      transition: all 0.2s ease;
+  }
+  
+  .health-issue-btn:hover:not(.btn-disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .health-issue-btn.btn-primary {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+  
+  .health-issue-btn.btn-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+  }
+  
+  /* Selected count badge styling */
+  .badge-primary {
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+  }
+  
+  /* Alert styling */
+  .alert {
+      border-radius: 0.5rem;
+  }
+</style>

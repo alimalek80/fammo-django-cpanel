@@ -1,0 +1,74 @@
+<!-- Step 1: Pet Name and Type -->
+<div class="space-y-6">
+    <!-- Pet Name Section -->
+    <div class="text-center">
+        <label class="block text-lg font-bold text-gray-700 dark:text-gray-300 mb-4">
+            {{ form.name.label }}
+        </label>
+        {{ form.name }}
+        {% if form.name.errors %}
+            <p class="text-red-500 text-sm mt-2">{{ form.name.errors|join:", " }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Pet Type Section -->
+    <div class="text-center">
+        <label class="block text-lg font-bold text-gray-700 dark:text-gray-300 mb-4">
+            {{ form.pet_type.label }}
+        </label>
+        <div class="flex justify-center gap-6">
+            {% for choice in form.pet_type %}
+                <label class="pet-type-btn w-32 bg-white border-2 border-gray-300 rounded-xl p-4 cursor-pointer text-center transition duration-200 hover:border-blue-400">
+                    {{ choice.tag }}
+                    <div class="pet-type-label">
+                        {% if choice.choice_label == "Dog" %}
+                            <i class="fa-solid fa-dog text-3xl text-indigo-600 mb-3 block"></i>
+                        {% elif choice.choice_label == "Cat" %}
+                            <i class="fa-solid fa-cat text-3xl text-pink-500 mb-3 block"></i>
+                        {% endif %}
+                        <div class="text-base font-medium text-gray-700">{{ choice.choice_label }}</div>
+                    </div>
+                </label>
+            {% endfor %}
+        </div>
+        {% if form.pet_type.errors %}
+            <p class="text-red-500 text-sm mt-3">{{ form.pet_type.errors|join:", " }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle radio button selection styling
+    const radioButtons = document.querySelectorAll('input[type="radio"][name="step1-pet_type"]');
+    const labels = document.querySelectorAll('.pet-type-btn');
+    
+    // Function to update button styles
+    function updateButtonStyles() {
+        labels.forEach(label => {
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio && radio.checked) {
+                label.classList.add('border-blue-600', 'bg-blue-50');
+                label.classList.remove('border-gray-300');
+            } else {
+                label.classList.remove('border-blue-600', 'bg-blue-50');
+                label.classList.add('border-gray-300');
+            }
+        });
+    }
+    
+    // Add click handlers
+    labels.forEach(label => {
+        label.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                updateButtonStyles();
+            }
+        });
+    });
+    
+    // Initial styling
+    updateButtonStyles();
+});
+</script>

@@ -1,5 +1,7 @@
 import openai
+import json
 from openai import OpenAI
+from pydantic import BaseModel
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from pet.models import Pet
@@ -14,6 +16,40 @@ from django.utils.translation import gettext_lazy as _
 
 
 openai.api_key = settings.OPENAI_API_KEY
+
+# Pydantic models for Structured Outputs
+class NutrientTargets(BaseModel):
+    protein_percent: str
+    fat_percent: str
+    carbs_percent: str
+
+class MealSection(BaseModel):
+    title: str
+    items: list[str]
+
+class MealOption(BaseModel):
+    name: str
+    overview: str
+    sections: list[MealSection]
+
+class FeedingSchedule(BaseModel):
+    time: str
+    note: str
+
+class MealPlan(BaseModel):
+    der_kcal: int
+    nutrient_targets: NutrientTargets
+    options: list[MealOption]
+    feeding_schedule: list[FeedingSchedule]
+    safety_notes: list[str]
+
+class HealthReport(BaseModel):
+    health_summary: str
+    breed_risks: list[str]
+    weight_and_diet: str
+    feeding_tips: list[str]
+    activity: str
+    alerts: list[str]
 
 def generate_meal_recommendation(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id, user=request.user)
@@ -36,40 +72,35 @@ def generate_meal_recommendation(request, pet_id):
         })
 
     pet_profile = pet.get_full_profile_for_ai()
+    # Ask for structured meal plan
     prompt = (
-        "You are a professional pet nutritionist. Based on the following pet profile, "
-        "suggest a balanced daily meal plan for one day. "
-        "Please use this format:\n\n"
-        "1. Home-cooked meals:\n"
-        "   - For each meal (breakfast, lunch, dinner), specify:\n"
-        "     • The recipe (ingredients and how to cook it, step by step)\n"
-        "     • The nutrition values (calories, protein, fat, carbs, fiber, etc) for each meal\n"
-        "2. Ready-made foods:\n"
-        "   - Suggest suitable wet and/or dry foods available in the market\n"
-        "   - Write their estimated nutrition values\n"
-        "3. Separate home-cooked and ready-made foods clearly.\n"
-        "4. Ensure the plan is suitable for the pet's age, weight, breed, and health conditions.\n"
-        "5. Please use clear headings for each section and use bullet points or tables for nutrition values if possible."
-        "6. for ready made food please No Brand food suggest.\n"
-        "7. Explain why this plan is suitable for this pet.\n\n"
-        "Pet Profile:\n"
-        f"{pet_profile}"
+        "You are a professional pet nutritionist. Based on the pet profile below, generate a detailed one-day meal plan. "
+        "Provide practical, safe, and nutritionally appropriate recommendations.\n\n"
+        f"Pet Profile:\n{pet_profile}"
     )
-
+    
     client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
-    chat_response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7,
+    response = client.responses.parse(
+        model="gpt-4o-2024-08-06",
+        input=prompt,
+        text_format=MealPlan,
     )
 
-    result = chat_response.choices[0].message.content
+    # Get parsed output
+    meal_plan = response.output_parsed
+    # Convert to dict for JSON storage
+    content_json = meal_plan.model_dump() if meal_plan else None
+    # Also keep text representation
+    result = json.dumps(content_json, indent=2) if content_json else ""
 
+    ip_address = get_client_ip(request)
     recommendation = AIRecommendation.objects.create(
         pet=pet,
         type=RecommendationType.MEAL,
-        content=result
+        content=result,
+        content_json=content_json,
+        ip_address=ip_address  # Save IP
     )
 
     # Only track usage for normal users
@@ -109,24 +140,30 @@ def generate_health_report(request, pet_id):
 
     pet_profile = pet.get_full_profile_for_ai()
     prompt = (
-        "You are a professional pet health consultant. Based on the following pet profile, "
-        "provide a short health insight report. Mention risks, diet, or activity suggestions. "
-        "Highlight any critical health issues.\n\n"
+        "You are a professional pet health consultant. Based on the pet profile below, generate a comprehensive health insight report. "
+        "Be informative, concise, and provide actionable recommendations.\n\n"
         f"Pet Profile:\n{pet_profile}"
     )
 
-    chat_response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7,
+    response = client.responses.parse(
+        model="gpt-4o-2024-08-06",
+        input=prompt,
+        text_format=HealthReport,
     )
 
-    result = chat_response.choices[0].message.content
+    # Get parsed output
+    health_data = response.output_parsed
+    # Convert to dict for JSON storage
+    summary_json = health_data.model_dump() if health_data else None
+    # Also keep text representation
+    result = json.dumps(summary_json, indent=2) if summary_json else ""
 
-    # Split into summary + suggestions if needed
+    ip_address = get_client_ip(request)
     report = AIHealthReport.objects.create(
         pet=pet,
-        summary=result
+        summary=result,
+        summary_json=summary_json,
+        ip_address=ip_address  # Save IP
     )
 
     if not request.user.is_superuser:
@@ -153,3 +190,11 @@ class AIHistoryView(TemplateView):
         context['recommendations'] = AIRecommendation.objects.filter(pet__in=user_pets).order_by('-created_at')
         context['reports'] = AIHealthReport.objects.filter(pet__in=user_pets).order_by('-created_at')
         return context
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip

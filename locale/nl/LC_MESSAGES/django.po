@@ -1,0 +1,1109 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-08 15:08+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\aihub\models.py:6
+msgid "Meal"
+msgstr "Maaltijd"
+
+#: .\aihub\models.py:7 .\pet\templates\pet\pet_form.html:224
+msgid "Health"
+msgstr "Gezondheid"
+
+#: .\aihub\templates\aihub\history.html:6
+msgid "AI Suggestions History"
+msgstr "AI-aanbevelingen – geschiedenis"
+
+#: .\aihub\templates\aihub\history.html:36
+msgid "Meal Recommendations"
+msgstr "Maaltijdaanbevelingen"
+
+#: .\aihub\templates\aihub\history.html:68
+msgid "No meal recommendations yet."
+msgstr "Nog geen maaltijdaanbevelingen."
+
+#: .\aihub\templates\aihub\history.html:78
+#: .\userapp\templates\userapp\dashboard_base.html:103
+msgid "Health Reports"
+msgstr "Gezondheidsrapporten"
+
+#: .\aihub\templates\aihub\history.html:110
+msgid "No health reports yet."
+msgstr "Nog geen gezondheidsrapporten."
+
+#: .\aihub\templates\aihub\history.html:118
+msgid "No pets found."
+msgstr "Geen huisdieren gevonden."
+
+#: .\aihub\templates\aihub\limit_reached.html:6
+msgid "Limit Reached"
+msgstr "Limiet bereikt"
+
+#: .\aihub\templates\aihub\limit_reached.html:9
+#: .\pet\templates\pet\pet_detail.html:26
+msgid "Back to My Pets"
+msgstr "Terug naar Mijn Huisdieren"
+
+#: .\aihub\views.py:35
+#, python-format
+msgid "You’ve reached your monthly limit of %(limit)s AI meal suggestions."
+msgstr "Je hebt je maandlimiet van %(limit)s AI-maaltijdaanbevelingen bereikt."
+
+#: .\aihub\views.py:110
+#, python-format
+msgid "You’ve reached your monthly limit of %(limit)s AI health reports."
+msgstr "Je hebt je maandlimiet van %(limit)s AI-gezondheidsrapporten bereikt."
+
+#: .\blog\templates\blog\blog_detail.html:47
+#: .\blog\templates\blog\blog_list.html:61
+msgid "No ratings"
+msgstr "Geen beoordelingen"
+
+#: .\blog\templates\blog\blog_detail.html:52
+#: .\blog\templates\blog\blog_detail.html:268
+msgid "Comments"
+msgstr "Reacties"
+
+#: .\blog\templates\blog\blog_detail.html:142
+msgid "Submit"
+msgstr "Verzenden"
+
+#: .\blog\templates\blog\blog_detail.html:147
+msgid "You rated:"
+msgstr "Je gaf als beoordeling:"
+
+#: .\blog\templates\blog\blog_detail.html:161
+#: .\blog\templates\blog\blog_detail.html:203
+msgid "Share this post:"
+msgstr "Deel dit bericht:"
+
+#: .\blog\templates\blog\blog_detail.html:245
+msgid "Previous"
+msgstr "Vorige"
+
+#: .\blog\templates\blog\blog_detail.html:257
+msgid "Next"
+msgstr "Volgende"
+
+#: .\blog\templates\blog\blog_detail.html:277
+msgid "Add a comment..."
+msgstr "Plaats een reactie..."
+
+#: .\blog\templates\blog\blog_detail.html:279
+msgid "Post Comment"
+msgstr "Reactie plaatsen"
+
+#: .\blog\templates\blog\blog_detail.html:283
+msgid "Login to comment."
+msgstr "Log in om te reageren."
+
+#: .\blog\templates\blog\blog_detail.html:302
+msgid "Deleted user"
+msgstr "Verwijderde gebruiker"
+
+#: .\blog\templates\blog\blog_detail.html:309
+msgid "No comments yet."
+msgstr "Nog geen reacties."
+
+#: .\blog\templates\blog\blog_list.html:4 .\templates\partials\navbar.html:33
+#: .\templates\partials\navbar.html:86
+msgid "Blog"
+msgstr "Blog"
+
+#: .\blog\templates\blog\blog_list.html:8
+msgid "FAMMO Blog"
+msgstr "FAMMO Blog"
+
+#: .\blog\templates\blog\blog_list.html:14
+msgid "All"
+msgstr "Alles"
+
+#: .\blog\templates\blog\blog_list.html:74
+msgid "No blog posts yet."
+msgstr "Nog geen blogberichten."
+
+#: .\core\forms.py:56 .\core\templates\core\contact.html:111
+msgid "You may contact me about my request."
+msgstr "U mag contact met mij opnemen over mijn verzoek."
+
+#: .\core\forms.py:65 .\core\templates\core\contact.html:86
+msgid "John Doe"
+msgstr "Jan Jansen"
+
+#: .\core\forms.py:71 .\core\templates\core\contact.html:92
+msgid "you@example.com"
+msgstr "jij@voorbeeld.com"
+
+#: .\core\forms.py:77 .\core\templates\core\contact.html:99
+msgid "General Inquiry"
+msgstr "Algemene vraag"
+
+#: .\core\forms.py:84 .\core\templates\core\contact.html:106
+msgid "Your message..."
+msgstr "Uw bericht..."
+
+#: .\core\templates\core\about.html:5 .\templates\partials\navbar.html:36
+#: .\templates\partials\navbar.html:87
+msgid "About Us"
+msgstr "Over ons"
+
+#: .\core\templates\core\about.html:9
+msgid "About FAMMO"
+msgstr "Over FAMMO"
+
+#: .\core\templates\core\about.html:11
+msgid ""
+"FAMMO is an AI-powered platform that delivers personalized meal plans and "
+"smarter nutrition recommendations to help pets live healthier, happier lives."
+msgstr ""
+"FAMMO is een AI-gestuurd platform dat gepersonaliseerde maaltijdplannen en "
+"slimme voedingsaanbevelingen levert om huisdieren gezonder en gelukkiger te "
+"laten leven."
+
+#: .\core\templates\core\about.html:22
+msgid "Our Origin Story"
+msgstr "Ons ontstaan"
+
+#: .\core\templates\core\about.html:24
+msgid ""
+"FAMMO was inspired by three very special pets: Misho and Mila, two beloved "
+"cats of our founders, and Manti, a happy and loyal dog owned by a close "
+"friend. Each had different food sensitivities and health needs, which made "
+"feeding them a daily challenge. That challenge turned into a mission—to "
+"create smarter, personalized pet nutrition using the power of artificial "
+"intelligence."
+msgstr ""
+"FAMMO is geïnspireerd door drie bijzondere huisdieren: Misho en Mila, de "
+"geliefde katten van onze oprichters, en Manti, een vrolijke en trouwe hond "
+"van een goede vriend. Elk had andere voedingsgevoeligheden en zorgbehoeften, "
+"waardoor het voeren dagelijks een uitdaging was. Die uitdaging werd onze "
+"missie: slimmere, gepersonaliseerde dierenvoeding creëren met de kracht van "
+"kunstmatige intelligentie."
+
+#: .\core\templates\core\about.html:47
+msgid "What We Do"
+msgstr "Wat we doen"
+
+#: .\core\templates\core\about.html:49
+msgid ""
+"FAMMO uses AI to analyze your pet’s unique profile — from breed and weight "
+"to health conditions, allergies, and lifestyle. Based on this, we generate "
+"smart, customized meal plans that support your pet’s long-term health and "
+"happiness."
+msgstr ""
+"FAMMO gebruikt AI om het unieke profiel van je huisdier te analyseren — van "
+"ras en gewicht tot aandoeningen, allergieën en levensstijl. Op basis daarvan "
+"genereren we slimme, op maat gemaakte maaltijdplannen die de lange-"
+"termijngezondheid en het welzijn van je huisdier ondersteunen."
+
+#: .\core\templates\core\about.html:54
+#: .\core\templates\core\how_it_works.html:156
+msgid "Why FAMMO?"
+msgstr "Waarom FAMMO?"
+
+#: .\core\templates\core\about.html:56
+msgid "AI-powered personalized nutrition plans for cats and dogs."
+msgstr "AI-gestuurde, gepersonaliseerde voedingsplannen voor honden en katten."
+
+#: .\core\templates\core\about.html:57
+msgid "Smart ingredient matching for sensitivities and goals."
+msgstr "Slimme ingrediënt-matching voor gevoeligheden en doelen."
+
+#: .\core\templates\core\about.html:58
+msgid "Multilingual support and intuitive design for every pet owner."
+msgstr ""
+"Meertalige ondersteuning en een intuïtief ontwerp voor elke huisdiereigenaar."
+
+#: .\core\templates\core\about.html:59
+msgid "Constantly evolving insights as your pet grows and changes."
+msgstr ""
+"Voortdurend evoluerende inzichten terwijl je huisdier groeit en verandert."
+
+#: .\core\templates\core\about.html:64
+msgid "Our Mission"
+msgstr "Onze missie"
+
+#: .\core\templates\core\about.html:66
+msgid ""
+"We believe every pet deserves a diet as unique as their personality. Our "
+"mission is to transform pet nutrition through AI, making it accessible, data-"
+"driven, and built with care."
+msgstr ""
+"Wij geloven dat elk huisdier een dieet verdient dat net zo uniek is als zijn "
+"karakter. Onze missie is om dierenvoeding met AI te transformeren: "
+"toegankelijk, datagedreven en met zorg opgebouwd."
+
+#: .\core\templates\core\about.html:71
+msgid "From Istanbul to the Netherlands"
+msgstr "Van Istanboel naar Nederland"
+
+#: .\core\templates\core\about.html:73
+msgid ""
+"FAMMO started in Istanbul, but our journey doesn’t stop there. We're "
+"relocating to the Netherlands to expand our vision, collaborate with "
+"European pet health innovators, and bring personalized nutrition to more "
+"pets across the world."
+msgstr ""
+"FAMMO begon in Istanboel, maar onze reis stopt daar niet. We verhuizen naar "
+"Nederland om onze visie uit te breiden, samen te werken met Europese "
+"innovators in dierengezondheid en gepersonaliseerde voeding naar meer "
+"huisdieren wereldwijd te brengen."
+
+#: .\core\templates\core\about.html:78
+msgid "Meet the Founders"
+msgstr "Ontmoet de oprichters"
+
+#: .\core\templates\core\about.html:80
+msgid ""
+"We're a small team of developers, nutrition enthusiasts, and animal lovers — "
+"united by a shared vision to build smarter solutions for our furry "
+"companions. FAMMO isn’t just a platform, it’s a passion."
+msgstr ""
+"We zijn een klein team van ontwikkelaars, voedingsliefhebbers en "
+"dierenvrienden — verenigd door een gedeelde visie om slimmere oplossingen te "
+"bouwen voor onze harige metgezellen. FAMMO is niet alleen een platform, het "
+"is een passie."
+
+#: .\core\templates\core\about.html:85 .\core\templates\core\contact.html:5
+#: .\templates\partials\navbar.html:39 .\templates\partials\navbar.html:88
+msgid "Contact Us"
+msgstr "Contact"
+
+#: .\core\templates\core\about.html:87
+msgid "Have questions, suggestions, or just want to say hi? Reach out to us at"
+msgstr "Vragen, suggesties of gewoon hallo zeggen? Neem contact met ons op via"
+
+#: .\core\templates\core\contact.html:11
+msgid "Contact FAMO"
+msgstr "Contact FAMO"
+
+#: .\core\templates\core\contact.html:12
+msgid "Questions, feedback, or partnership ideas? We’d love to hear from you."
+msgstr "Vragen, feedback of ideeën voor samenwerking? We horen graag van je."
+
+#: .\core\templates\core\contact.html:33
+msgid "Get in touch"
+msgstr "Neem contact op"
+
+#: .\core\templates\core\contact.html:35
+msgid ""
+"Fill out the form and our team will get back to you within one business day."
+msgstr "Vul het formulier in en ons team reageert binnen één werkdag."
+
+#: .\core\templates\core\contact.html:45 .\core\templates\core\contact.html:89
+msgid "Email"
+msgstr "E-mail"
+
+#: .\core\templates\core\contact.html:56 .\userapp\forms.py:49
+#: .\userapp\models.py:30 .\userapp\templates\userapp\update_profile.html:51
+msgid "Address"
+msgstr "Adres"
+
+#: .\core\templates\core\contact.html:57
+msgid "Istanbul, Türkiye (remote-first)"
+msgstr "Istanboel, Türkiye (remote-first)"
+
+#: .\core\templates\core\contact.html:63
+msgid "Follow us"
+msgstr "Volg ons"
+
+#: .\core\templates\core\contact.html:83
+msgid "Name"
+msgstr "Naam"
+
+#: .\core\templates\core\contact.html:96
+msgid "Subject"
+msgstr "Onderwerp"
+
+#: .\core\templates\core\contact.html:103
+msgid "Message"
+msgstr "Bericht"
+
+#: .\core\templates\core\contact.html:115
+msgid "Send message"
+msgstr "Bericht verzenden"
+
+#: .\core\templates\core\contact.html:125
+msgid "Message Sent!"
+msgstr "Bericht verzonden!"
+
+#: .\core\templates\core\contact.html:126
+msgid "Our team will get back to you within one business day."
+msgstr "Ons team neemt binnen één werkdag contact met je op."
+
+#: .\core\templates\core\contact.html:127
+msgid "OK"
+msgstr "OK"
+
+#: .\core\templates\core\home.html:5
+msgid "Welcome to FAMO"
+msgstr "Welkom bij FAMO"
+
+#: .\core\templates\core\home.html:48
+msgid "Try for Free"
+msgstr "Probeer gratis"
+
+#: .\core\templates\core\home.html:51
+msgid "Login / Sign Up"
+msgstr "Inloggen / Registreren"
+
+#: .\core\templates\core\home.html:67
+msgid "Personalized Meal Plans"
+msgstr "Gepersonaliseerde maaltijdplannen"
+
+#: .\core\templates\core\home.html:68
+msgid "Tailored recommendations based on your pet's unique needs."
+msgstr ""
+"Aanbevelingen op maat, gebaseerd op de unieke behoeften van je huisdier."
+
+#: .\core\templates\core\home.html:72
+msgid "Health Risk Alerts"
+msgstr "Gezondheidsrisicowaarschuwingen"
+
+#: .\core\templates\core\home.html:73
+msgid "Proactive insights to keep your pet healthy and happy."
+msgstr "Proactieve inzichten om je huisdier gezond en gelukkig te houden."
+
+#: .\core\templates\core\home.html:77
+msgid "Smart Pet Profiles"
+msgstr "Slimme huisdierprofielen"
+
+#: .\core\templates\core\home.html:78
+msgid "Comprehensive profiles for precise AI analysis."
+msgstr "Uitgebreide profielen voor nauwkeurige AI-analyse."
+
+#: .\core\templates\core\home.html:85
+msgid "What Our Users Say"
+msgstr "Wat onze gebruikers zeggen"
+
+#: .\core\templates\core\home.html:109
+msgid "Frequently Asked Questions"
+msgstr "Veelgestelde vragen"
+
+#: .\core\templates\core\home.html:128
+msgid "No FAQs have been published yet."
+msgstr "Er zijn nog geen veelgestelde vragen gepubliceerd."
+
+#: .\core\templates\core\home.html:135
+msgid "Ready to Transform Your Pet's Life?"
+msgstr "Klaar om het leven van je huisdier te verbeteren?"
+
+#: .\core\templates\core\home.html:137
+msgid ""
+"Join thousands of satisfied pet owners who trust FAMO for their pets' "
+"nutrition and health."
+msgstr ""
+"Sluit je aan bij duizenden tevreden eigenaren die FAMO vertrouwen voor de "
+"voeding en gezondheid van hun huisdieren."
+
+#: .\core\templates\core\home.html:140
+msgid "Get Started Today"
+msgstr "Begin vandaag nog"
+
+#: .\core\templates\core\how_it_works.html:5
+msgid "How it works"
+msgstr "Hoe het werkt"
+
+#: .\core\templates\core\how_it_works.html:12
+#| msgid "How it Works"
+msgid "How FAMMO Works"
+msgstr "Hoe het werkt"
+
+#: .\core\templates\core\how_it_works.html:14
+msgid ""
+"At FAMMO, we make it easy to give your pet the nutrition and care they truly "
+"deserve. Here’s how our platform helps you step by step:"
+msgstr ""
+"Bij FAMMO maken we het eenvoudig om jouw huisdier de voeding en zorg te geven "
+"die het echt verdient. Zo helpt ons platform je stap voor stap:"
+
+#: .\core\templates\core\how_it_works.html:29
+msgid "1. Sign Up & Log In"
+msgstr "1. Aanmelden & Inloggen"
+
+#: .\core\templates\core\how_it_works.html:32
+msgid ""
+"Getting started is simple! Create an account with your email or Google "
+"login. In just a minute, you’ll have your own dashboard."
+msgstr ""
+"Beginnen is eenvoudig! Maak een account aan met je e-mail of Google-login. "
+"Binnen een minuut heb je je eigen dashboard."
+
+#: .\core\templates\core\how_it_works.html:36
+#| msgid "Register"
+msgid "Register Now"
+msgstr "Nu registreren"
+
+#: .\core\templates\core\how_it_works.html:40
+msgid "fammo login and register page"
+msgstr "fammo inlog- en registratiepagina"
+
+#: .\core\templates\core\how_it_works.html:54
+#: .\core\templates\core\how_it_works.html:110
+msgid "Illustration showcasing FAMMO features"
+msgstr "Illustratie met FAMMO-functies"
+
+#: .\core\templates\core\how_it_works.html:59
+msgid "2. Create Your Pet’s Profile"
+msgstr "2. Maak het profiel van je huisdier aan"
+
+#: .\core\templates\core\how_it_works.html:62
+msgid ""
+"Every pet is unique — that’s why we ask a few quick questions about your "
+"furry friend:  \n"
+"              Name, breed, and age,  \n"
+"              Weight & activity level,  \n"
+"              Any allergies or health conditions.  \n"
+"\n"
+"              Dashboard → My Pets → Add New Pet  \n"
+"\n"
+"              This helps our AI understand what makes your pet special."
+msgstr ""
+"Elk huisdier is uniek — daarom stellen we een paar korte vragen over jouw "
+"vriendje:  \n"
+"Naam, ras en leeftijd,  \n"
+"Gewicht & activiteitsniveau,  \n"
+"Eventuele allergieën of gezondheidsproblemen.  \n"
+"\n"
+"Dashboard → Mijn Huisdieren → Nieuw Huisdier toevoegen  \n"
+"\n"
+"Zo begrijpt onze AI wat jouw huisdier bijzonder maakt."
+
+#: .\core\templates\core\how_it_works.html:84
+#| msgid "Meal Recommendations"
+msgid "3. Get AI-Powered Recommendations"
+msgstr "3. Ontvang AI-gestuurde aanbevelingen"
+
+#: .\core\templates\core\how_it_works.html:87
+msgid ""
+"With your pet’s profile ready, you can access two powerful tools:  \n"
+"              AI Meal Suggestions → Tailored meal plans based on your pet’s "
+"needs.  \n"
+"              AI Health Reports → Preventive insights to keep your pet "
+"healthier for longer."
+msgstr ""
+"Met het profiel van je huisdier klaar heb je toegang tot twee krachtige tools:  \n"
+"AI-maaltijdsuggesties → Op maat gemaakte maaltijdplannen op basis van de behoeften van jouw huisdier.  \n"
+"AI-gezondheidsrapporten → Preventieve inzichten om je huisdier langer gezond te houden."
+
+#: .\core\templates\core\how_it_works.html:92
+msgid ""
+"(Meal suggestions currently focus on nutrition. Specific brand "
+"recommendations will be added soon as we partner with trusted pet food "
+"suppliers.)"
+msgstr ""
+"(Maaltijdsuggesties richten zich momenteel op voeding. Specifieke merkadviezen "
+"worden binnenkort toegevoegd wanneer we samenwerken met vertrouwde leveranciers van dierenvoeding.)"
+
+#: .\core\templates\core\how_it_works.html:96
+#: .\core\templates\core\how_it_works.html:144
+msgid "A stylized placeholder image representing learning and growth"
+msgstr "Een gestileerde voorbeeldafbeelding die leren en groei weergeeft"
+
+#: .\core\templates\core\how_it_works.html:115
+msgid "4. Track Progress Over Time"
+msgstr "4. Volg de voortgang in de tijd"
+
+#: .\core\templates\core\how_it_works.html:118
+msgid ""
+"Every suggestion and report is stored in your AI History, so you can follow "
+"your pet’s journey and see how their needs evolve."
+msgstr ""
+"Elke suggestie en elk rapport wordt opgeslagen in je AI-geschiedenis, zodat je "
+"de reis van je huisdier kunt volgen en zien hoe hun behoeften zich ontwikkelen."
+
+#: .\core\templates\core\how_it_works.html:133
+msgid "5. Your Dashboard at a Glance"
+msgstr "5. Jouw dashboard in één oogopslag"
+
+#: .\core\templates\core\how_it_works.html:136
+msgid ""
+"Your dashboard brings everything together:  \n"
+"              - Quick access to pet profiles  \n"
+"              - One-click AI tools  \n"
+"              - Edit everything  \n"
+"              - Upgrade your Plan"
+msgstr ""
+"Je dashboard brengt alles samen:  \n"
+"- Snel toegang tot huisdierprofielen  \n"
+"- AI-tools met één klik  \n"
+"- Alles bewerken  \n"
+"- Je abonnement upgraden"
+
+#: .\core\templates\core\how_it_works.html:158
+msgid ""
+"Because no two pets are alike. We believe every dog and cat deserves "
+"personalized nutrition and preventive health care — powered by AI, made "
+"simple for you."
+msgstr ""
+"Omdat geen twee huisdieren hetzelfde zijn. Wij vinden dat elke hond en kat "
+"gepersonaliseerde voeding en preventieve zorg verdient — mogelijk gemaakt "
+"door AI en voor jou eenvoudig gemaakt."
+
+#: .\core\templates\core\how_it_works.html:161
+msgid "Start today and discover smarter feeding for a healthier, happier pet."
+msgstr ""
+"Begin vandaag en ontdek slimmer voeren voor een gezonder en gelukkiger "
+"huisdier."
+
+#: .\core\templates\core\manage_hero_section.html:6
+msgid "Manage Homepage Hero Section"
+msgstr "Startpagina-hero beheren"
+
+#: .\core\templates\core\manage_hero_section.html:26
+#: .\core\templates\core\manage_social_links.html:19
+#: .\userapp\templates\userapp\update_profile.html:57
+msgid "Save Changes"
+msgstr "Wijzigingen opslaan"
+
+#: .\core\templates\core\manage_social_links.html:5
+msgid "Manage Social Media Links"
+msgstr "Sociale-media-links beheren"
+
+#: .\pet\templates\pet\my_pets.html:12 .\templates\partials\navbar.html:26
+#: .\templates\partials\navbar.html:83
+#: .\userapp\templates\userapp\dashboard_base.html:33
+msgid "My Pets"
+msgstr "Mijn huisdieren"
+
+#: .\pet\templates\pet\my_pets.html:17
+msgid "Add New Pet"
+msgstr "Nieuw huisdier toevoegen"
+
+#: .\pet\templates\pet\my_pets.html:23
+msgid "You can add unlimited pets."
+msgstr "Je kunt onbeperkt huisdieren toevoegen."
+
+#: .\pet\templates\pet\my_pets.html:26
+msgid "Your plan allows up to"
+msgstr "Je abonnement staat tot"
+
+#: .\pet\templates\pet\my_pets.html:26
+msgid "pets."
+msgstr "huisdieren toe."
+
+#: .\pet\templates\pet\my_pets.html:56
+msgid "No type selected"
+msgstr "Geen type geselecteerd"
+
+#: .\pet\templates\pet\my_pets.html:65 .\pet\templates\pet\pet_form.html:7
+msgid "Edit"
+msgstr "Bewerken"
+
+#: .\pet\templates\pet\my_pets.html:68
+msgid "Are you sure you want to delete this pet?"
+msgstr "Weet je zeker dat je dit huisdier wilt verwijderen?"
+
+#: .\pet\templates\pet\my_pets.html:71
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: .\pet\templates\pet\my_pets.html:78
+msgid "AI Meal"
+msgstr "AI-maaltijd"
+
+#: .\pet\templates\pet\my_pets.html:84
+msgid "AI Health"
+msgstr "AI-gezondheid"
+
+#: .\pet\templates\pet\my_pets.html:93
+msgid "You have not added any pets yet."
+msgstr "Je hebt nog geen huisdieren toegevoegd."
+
+#: .\pet\templates\pet\my_pets.html:105
+msgid "Processing, please wait..."
+msgstr "Bezig met verwerken, even geduld…"
+
+#: .\pet\templates\pet\my_pets.html:106
+msgid "Your AI request is being generated. This usually takes a few seconds."
+msgstr "Je AI-verzoek wordt gegenereerd. Dit duurt meestal enkele seconden."
+
+#: .\pet\templates\pet\pet_detail.html:9
+msgid "Type"
+msgstr "Type"
+
+#: .\pet\templates\pet\pet_detail.html:10
+#: .\userapp\templates\userapp\users_admin.html:56
+msgid "Breed"
+msgstr "Ras"
+
+#: .\pet\templates\pet\pet_detail.html:11
+msgid "Gender"
+msgstr "Geslacht"
+
+#: .\pet\templates\pet\pet_detail.html:12
+msgid "Neutered"
+msgstr "Gesteriliseerd/gecastreerd"
+
+#: .\pet\templates\pet\pet_detail.html:12
+msgid "Yes,No"
+msgstr "Ja,Nee"
+
+#: .\pet\templates\pet\pet_detail.html:13
+#: .\userapp\templates\userapp\users_admin.html:57
+msgid "Age"
+msgstr "Leeftijd"
+
+#: .\pet\templates\pet\pet_detail.html:13
+msgid "years"
+msgstr "jaar"
+
+#: .\pet\templates\pet\pet_detail.html:13
+msgid "months"
+msgstr "maanden"
+
+#: .\pet\templates\pet\pet_detail.html:13
+msgid "weeks"
+msgstr "weken"
+
+#: .\pet\templates\pet\pet_detail.html:14
+msgid "Weight"
+msgstr "Gewicht"
+
+#: .\pet\templates\pet\pet_detail.html:17
+msgid "Body Type"
+msgstr "Lichaamstype"
+
+#: .\pet\templates\pet\pet_detail.html:18
+msgid "Activity Level"
+msgstr "Activiteitsniveau"
+
+#: .\pet\templates\pet\pet_detail.html:19
+msgid "Food Types"
+msgstr "Voedingstypen"
+
+#: .\pet\templates\pet\pet_detail.html:20
+msgid "Food Allergies"
+msgstr "Voedselallergieën"
+
+#: .\pet\templates\pet\pet_detail.html:21
+msgid "Health Issues"
+msgstr "Gezondheidsproblemen"
+
+#: .\pet\templates\pet\pet_detail.html:25
+msgid "Edit Pet"
+msgstr "Huisdier bewerken"
+
+#: .\pet\templates\pet\pet_form.html:7
+msgid "Add"
+msgstr "Toevoegen"
+
+#: .\pet\templates\pet\pet_form.html:7
+msgid "Pet Profile"
+msgstr "Huisdierprofiel"
+
+#: .\pet\templates\pet\pet_form.html:17
+msgid "Basic Info"
+msgstr "Basisgegevens"
+
+#: .\pet\templates\pet\pet_form.html:346
+msgid "Food & Treats"
+msgstr "Voer & traktaties"
+
+#: .\pet\templates\pet\pet_form.html:438
+msgid "Update"
+msgstr "Bijwerken"
+
+#: .\pet\templates\pet\pet_form.html:438
+msgid "Save"
+msgstr "Opslaan"
+
+#: .\subscription\models.py:14
+msgid "Essentials"
+msgstr "Essentials"
+
+#: .\subscription\models.py:15
+msgid "Wellness"
+msgstr "Wellness"
+
+#: .\subscription\models.py:16
+msgid "Optimal"
+msgstr "Optimal"
+
+#: .\subscription\templates\subscription\plan_list.html:11
+msgid "Choose Your Plan"
+msgstr "Kies je abonnement"
+
+#: .\subscription\templates\subscription\plan_list.html:102
+msgid "Update Plan"
+msgstr "Abonnement bijwerken"
+
+#: .\templates\partials\navbar.html:23 .\templates\partials\navbar.html:82
+msgid "Make Your Plan"
+msgstr "Maak je plan"
+
+#: .\templates\partials\navbar.html:29 .\templates\partials\navbar.html:84
+#: .\userapp\templates\userapp\dashboard_base.html:67
+msgid "AI History"
+msgstr "AI-geschiedenis"
+
+#: .\templates\partials\navbar.html:42 .\templates\partials\navbar.html:89
+msgid "How it Works"
+msgstr "Hoe het werkt"
+
+#: .\templates\partials\navbar.html:50 .\templates\partials\navbar.html:93
+#: .\userapp\templates\userapp\dashboard.html:20
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: .\templates\partials\navbar.html:53 .\templates\partials\navbar.html:96
+#: .\userapp\templates\userapp\dashboard_base.html:81
+msgid "Logout"
+msgstr "Uitloggen"
+
+#: .\templates\partials\navbar.html:57 .\templates\partials\navbar.html:100
+#: .\userapp\templates\userapp\login.html:48
+#: .\userapp\templates\userapp\password_reset_complete.html:7
+msgid "Login"
+msgstr "Inloggen"
+
+#: .\templates\partials\navbar.html:60 .\templates\partials\navbar.html:103
+msgid "Signup"
+msgstr "Registreren"
+
+#: .\templates\socialaccount\login.html:5
+msgid "Sign In with Social Account"
+msgstr "Inloggen met sociaal account"
+
+#: .\templates\socialaccount\login.html:16
+#, python-format
+msgid "Connect %(provider)s"
+msgstr "%(provider)s koppelen"
+
+#: .\templates\socialaccount\login.html:18
+#, python-format
+msgid "Sign In Via %(provider)s"
+msgstr "Inloggen via %(provider)s"
+
+#: .\templates\socialaccount\login.html:23
+#, python-format
+msgid "You are about to connect a new third-party account from %(provider)s."
+msgstr ""
+"Je staat op het punt een nieuw account van een externe partij (%(provider)s) "
+"te koppelen."
+
+#: .\templates\socialaccount\login.html:25
+#, python-format
+msgid "You are about to sign in using a third-party account from %(provider)s."
+msgstr ""
+"Je staat op het punt in te loggen met een account van een externe partij "
+"(%(provider)s)."
+
+#: .\templates\socialaccount\login.html:33
+msgid "Continue"
+msgstr "Doorgaan"
+
+#: .\templates\socialaccount\login.html:38
+msgid "Back to Login"
+msgstr "Terug naar inloggen"
+
+#: .\userapp\forms.py:7 .\userapp\templates\userapp\login.html:30
+msgid "Password"
+msgstr "Wachtwoord"
+
+#: .\userapp\forms.py:8
+msgid "Confirm Password"
+msgstr "Bevestig wachtwoord"
+
+#: .\userapp\forms.py:18
+msgid "Passwords do not match"
+msgstr "Wachtwoorden komen niet overeen"
+
+#: .\userapp\forms.py:37 .\userapp\templates\userapp\login.html:21
+msgid "Email Address"
+msgstr "E-mailadres"
+
+#: .\userapp\forms.py:46 .\userapp\models.py:27
+#: .\userapp\templates\userapp\update_profile.html:14
+msgid "First Name"
+msgstr "Voornaam"
+
+#: .\userapp\forms.py:47 .\userapp\models.py:28
+#: .\userapp\templates\userapp\update_profile.html:20
+msgid "Last Name"
+msgstr "Achternaam"
+
+#: .\userapp\forms.py:48 .\userapp\templates\userapp\update_profile.html:26
+msgid "Phone"
+msgstr "Telefoon"
+
+#: .\userapp\forms.py:50 .\userapp\models.py:31
+#: .\userapp\templates\userapp\update_profile.html:32
+msgid "City"
+msgstr "Stad"
+
+#: .\userapp\forms.py:51 .\userapp\models.py:32
+#: .\userapp\templates\userapp\update_profile.html:38
+msgid "ZIP Code"
+msgstr "Postcode"
+
+#: .\userapp\forms.py:52 .\userapp\models.py:33
+#: .\userapp\templates\userapp\update_profile.html:44
+msgid "Country"
+msgstr "Land"
+
+#: .\userapp\models.py:29
+msgid "Phone Number"
+msgstr "Telefoonnummer"
+
+#: .\userapp\templates\userapp\admin_dashboard.html:6
+msgid "Admin Statistics"
+msgstr "Beheerstatistieken"
+
+#: .\userapp\templates\userapp\admin_dashboard.html:10
+msgid "Total Users"
+msgstr "Totaal aantal gebruikers"
+
+#: .\userapp\templates\userapp\admin_dashboard.html:15
+msgid "Total Pets"
+msgstr "Totaal aantal huisdieren"
+
+#: .\userapp\templates\userapp\admin_dashboard.html:20
+msgid "Dogs"
+msgstr "Honden"
+
+#: .\userapp\templates\userapp\admin_dashboard.html:25
+msgid "Cats"
+msgstr "Katten"
+
+#: .\userapp\templates\userapp\admin_dashboard.html:30
+msgid "AI Meals"
+msgstr "AI-maaltijden"
+
+#: .\userapp\templates\userapp\admin_dashboard.html:35
+msgid "AI Health Reports"
+msgstr "AI-gezondheidsrapporten"
+
+#: .\userapp\templates\userapp\admin_dashboard.html:41
+msgid "Top Countries by AI Requests"
+msgstr "Toplanden naar AI-verzoeken"
+
+#: .\userapp\templates\userapp\admin_dashboard.html:49
+msgid "Download Pets CSV"
+msgstr "Huisdieren-CSV downloaden"
+
+#: .\userapp\templates\userapp\admin_dashboard.html:52
+msgid "Download Users CSV"
+msgstr "Gebruikers-CSV downloaden"
+
+#: .\userapp\templates\userapp\dashboard.html:9
+msgid "Looks like your furry friend isn’t here yet!"
+msgstr "Het lijkt erop dat je harige vriend hier nog niet is!"
+
+#: .\userapp\templates\userapp\dashboard.html:12
+msgid ""
+"Add your pet now to unlock personalized AI Meals and Health Reports tailored "
+"just for them!"
+msgstr ""
+"Voeg nu je huisdier toe om gepersonaliseerde AI-maaltijden en "
+"gezondheidsrapporten te ontgrendelen – speciaal voor hem of haar!"
+
+#: .\userapp\templates\userapp\dashboard.html:15
+msgid "Add Pet"
+msgstr "Huisdier toevoegen"
+
+#: .\userapp\templates\userapp\dashboard.html:21 .\userapp\views.py:97
+msgid "Welcome to your dashboard!"
+msgstr "Welkom op je dashboard!"
+
+#: .\userapp\templates\userapp\dashboard.html:26
+msgid "Profile"
+msgstr "Profiel"
+
+#: .\userapp\templates\userapp\dashboard.html:27
+msgid "Edit your personal info"
+msgstr "Bewerk je persoonlijke gegevens"
+
+#: .\userapp\templates\userapp\dashboard.html:33
+#: .\userapp\templates\userapp\dashboard_base.html:53
+msgid "Statistics"
+msgstr "Statistieken"
+
+#: .\userapp\templates\userapp\dashboard.html:34
+msgid "View your activity"
+msgstr "Bekijk je activiteit"
+
+#: .\userapp\templates\userapp\dashboard_base.html:27
+msgid "Edit Profile"
+msgstr "Profiel bewerken"
+
+#: .\userapp\templates\userapp\dashboard_base.html:40
+msgid "Users"
+msgstr "Gebruikers"
+
+#: .\userapp\templates\userapp\dashboard_base.html:47
+msgid "Homepage Hero"
+msgstr "Startpagina-hero"
+
+#: .\userapp\templates\userapp\dashboard_base.html:59
+msgid "Social Links"
+msgstr "Sociale links"
+
+#: .\userapp\templates\userapp\dashboard_base.html:73
+msgid "My Plan"
+msgstr "Mijn abonnement"
+
+#: .\userapp\templates\userapp\dashboard_base.html:99
+msgid "Meal Suggestions"
+msgstr "Maaltijdaanbevelingen"
+
+#: .\userapp\templates\userapp\login.html:13
+msgid "Welcome Back"
+msgstr "Welkom terug"
+
+#: .\userapp\templates\userapp\login.html:14
+msgid "Please enter your credentials to log in."
+msgstr "Vul je gegevens in om in te loggen."
+
+#: .\userapp\templates\userapp\login.html:36
+msgid "Forgot password?"
+msgstr "Wachtwoord vergeten?"
+
+#: .\userapp\templates\userapp\login.html:53
+msgid "Don't have an account?"
+msgstr "Nog geen account?"
+
+#: .\userapp\templates\userapp\login.html:54
+msgid "Register here"
+msgstr "Hier registreren"
+
+#: .\userapp\templates\userapp\password_reset_complete.html:5
+msgid "Password Reset Complete"
+msgstr "Wachtwoord opnieuw instellen voltooid"
+
+#: .\userapp\templates\userapp\password_reset_complete.html:6
+msgid "Your password has been set. You may go ahead and log in now."
+msgstr "Je wachtwoord is ingesteld. Je kunt nu inloggen."
+
+#: .\userapp\templates\userapp\password_reset_confirm.html:5
+msgid "Set New Password"
+msgstr "Nieuw wachtwoord instellen"
+
+#: .\userapp\templates\userapp\password_reset_confirm.html:16
+msgid "Change Password"
+msgstr "Wachtwoord wijzigen"
+
+#: .\userapp\templates\userapp\password_reset_done.html:5
+msgid "Password Reset Sent"
+msgstr "E-mail voor wachtwoordherstel verzonden"
+
+#: .\userapp\templates\userapp\password_reset_done.html:6
+msgid ""
+"We've emailed you instructions for setting your password. You should receive "
+"the email shortly."
+msgstr ""
+"We hebben je instructies gemaild om je wachtwoord in te stellen. Je ontvangt "
+"de e-mail spoedig."
+
+#: .\userapp\templates\userapp\password_reset_form.html:5
+msgid "Forgot Password"
+msgstr "Wachtwoord vergeten"
+
+#: .\userapp\templates\userapp\password_reset_form.html:12
+msgid "Send Reset Link"
+msgstr "Resetlink verzenden"
+
+#: .\userapp\templates\userapp\register.html:8
+msgid "Register"
+msgstr "Registreren"
+
+#: .\userapp\templates\userapp\register.html:9
+msgid "Create your account to get started."
+msgstr "Maak een account aan om te beginnen."
+
+#: .\userapp\templates\userapp\register.html:39
+msgid "Sign Up"
+msgstr "Aanmelden"
+
+#: .\userapp\templates\userapp\register.html:44
+msgid "Already have an account?"
+msgstr "Heb je al een account?"
+
+#: .\userapp\templates\userapp\register.html:46
+msgid "Login here"
+msgstr "Hier inloggen"
+
+#: .\userapp\templates\userapp\update_profile.html:7
+msgid "Edit Your Profile"
+msgstr "Je profiel bewerken"
+
+#: .\userapp\templates\userapp\users_admin.html:8
+msgid "User & Pet Management"
+msgstr "Beheer gebruikers & huisdieren"
+
+#: .\userapp\templates\userapp\users_admin.html:21
+msgid "Admin"
+msgstr "Beheerder"
+
+#: .\userapp\templates\userapp\users_admin.html:23
+msgid "Staff"
+msgstr "Medewerker"
+
+#: .\userapp\templates\userapp\users_admin.html:40
+msgid "No subscription"
+msgstr "Geen abonnement"
+
+#: .\userapp\templates\userapp\users_admin.html:48
+msgid "Pets:"
+msgstr "Huisdieren:"
+
+#: .\userapp\templates\userapp\users_admin.html:62
+msgid "No pets"
+msgstr "Geen huisdieren"
+
+#: .\userapp\templates\userapp\users_admin.html:68
+msgid "No users found."
+msgstr "Geen gebruikers gevonden."
+
+#: .\userapp\views.py:40
+msgid ""
+"Registration successful. Please check your email to activate your account."
+msgstr "Registratie gelukt. Controleer je e-mail om je account te activeren."
+
+#: .\userapp\views.py:43 .\userapp\views.py:83
+msgid "Please correct the errors below."
+msgstr "Corrigeer de onderstaande fouten."
+
+#: .\userapp\views.py:50
+msgid "You are already logged in."
+msgstr "Je bent al ingelogd."
+
+#: .\userapp\views.py:59
+msgid "Login successful."
+msgstr "Inloggen geslaagd."
+
+#: .\userapp\views.py:62
+msgid "Invalid login credentials."
+msgstr "Ongeldige inloggegevens."
+
+#: .\userapp\views.py:70
+msgid "You have been logged out."
+msgstr "Je bent uitgelogd."
+
+#: .\userapp\views.py:80
+msgid "Profile updated successfully."
+msgstr "Profiel succesvol bijgewerkt."
+
+#: .\userapp\views.py:122
+msgid "Your account has been activated. You can now log in."
+msgstr "Je account is geactiveerd. Je kunt nu inloggen."
+
+#: .\userapp\views.py:125
+msgid "Activation link is invalid!"
+msgstr "Activatielink is ongeldig!"

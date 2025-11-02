@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
+from markdownx.models import MarkdownxField
 
 class BlogCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -13,13 +14,15 @@ class BlogPost(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)  # Allow blank for auto-generation
     category = models.ForeignKey(BlogCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
-    content = models.TextField()
+    content = MarkdownxField()
     image = models.ImageField(upload_to='blog_images/', blank=True, null=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    published_at = models.DateTimeField(null=True, blank=True)
     meta_description = models.CharField(max_length=255, blank=True, null=True)
     meta_keywords = models.CharField(max_length=255, blank=True, null=True)
+    views = models.PositiveIntegerField(default=0)
 
     def average_rating(self):
         ratings = self.ratings.all()

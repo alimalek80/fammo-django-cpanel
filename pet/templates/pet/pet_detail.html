@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10">
+    <h2 class="text-2xl font-bold mb-4 text-center">{{ pet.name }}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <p><strong>{% trans "Type" %}:</strong> {{ pet.pet_type.name }}</p>
+            <p><strong>{% trans "Breed" %}:</strong> {{ pet.breed.name }}</p>
+            <p><strong>{% trans "Gender" %}:</strong> {{ pet.gender.name }}</p>
+            <p><strong>{% trans "Neutered" %}:</strong> {{ pet.neutered|yesno:_("Yes,No") }}</p>
+            <p><strong>{% trans "Age" %}:</strong> {{ pet.age_years }} {% trans "years" %}, {{ pet.age_months }} {% trans "months" %}, {{ pet.age_weeks }} {% trans "weeks" %}</p>
+            <p><strong>{% trans "Weight" %}:</strong> {{ pet.weight }} kg</p>
+        </div>
+        <div>
+            <p><strong>{% trans "Body Type" %}:</strong> {{ pet.body_type.name }}</p>
+            <p><strong>{% trans "Activity Level" %}:</strong> {{ pet.activity_level.name }}</p>
+            <p><strong>{% trans "Food Types" %}:</strong> {{ pet.food_types.all|join:", " }}</p>
+            <p><strong>{% trans "Food Allergies" %}:</strong> {{ pet.food_allergies.all|join:", " }}</p>
+            <p><strong>{% trans "Health Issues" %}:</strong> {{ pet.health_issues.all|join:", " }}</p>
+        </div>
+    </div>
+    <div class="mt-8 text-center">
+        <a href="{% url 'pet:edit_pet' pk=pet.id %}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">{% trans "Edit Pet" %}</a>
+        <a href="{% url 'pet:my_pets' %}" class="ml-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">{% trans "Back to My Pets" %}</a>
+    </div>
+</div>
+{% endblock %}
