@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load allauth %}
+
+{% block title %}{% trans "Sign In with Social Account" %}{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-[60vh] py-8">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+        <div class="flex flex-col items-center mb-6">
+            <div class="bg-blue-100 rounded-full p-3 mb-3">
+                <i class="fa-brands fa-google text-3xl text-red-500"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">
+                {% if process == "connect" %}
+                    {% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}
+                {% else %}
+                    {% blocktrans with provider.name as provider %}Sign In Via {{ provider }}{% endblocktrans %}
+                {% endif %}
+            </h2>
+            <p class="text-gray-600 text-center text-sm mb-2">
+                {% if process == "connect" %}
+                    {% blocktrans with provider.name as provider %}You are about to connect a new third-party account from {{ provider }}.{% endblocktrans %}
+                {% else %}
+                    {% blocktrans with provider.name as provider %}You are about to sign in using a third-party account from {{ provider }}.{% endblocktrans %}
+                {% endif %}
+            </p>
+        </div>
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <button type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition ease-in-out duration-150">
+                {% trans "Continue" %}
+            </button>
+        </form>
+        <div class="mt-6 text-center">
+            <a href="{% url 'account_login' %}" class="text-blue-600 hover:text-blue-800 font-semibold text-sm">
+                {% trans "Back to Login" %}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

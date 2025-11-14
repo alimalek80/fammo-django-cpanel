@@ -1,0 +1,543 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Pet Chat (Dogs & Cats)</title>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts / Base styles -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* keep only chat area scrolling */
+            background-color: #121212;
+            color: white;
+        }
+        #chat-container {
+            height: 100dvh; /* mobile-friendly dynamic viewport */
+            height: 100vh;  /* fallback for older browsers */
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            background-color: #1a1a1a;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        @supports (height: 100dvh) {
+            #chat-container {
+                height: 100dvh;
+            }
+        }
+        #chat-window {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 24px;
+            scroll-behavior: smooth;
+            min-height: 0; /* Important: allows flex child to shrink below content size */
+        }
+        #input-container {
+            flex-shrink: 0; /* Never shrink the input area */
+            background-color: #1a1a1a;
+            padding: 16px 24px;
+            /* include safe area on iOS - max ensures minimum 16px even without notch */
+            padding-bottom: max(16px, env(safe-area-inset-bottom));
+            border-top: 1px solid #333;
+            width: 100%;
+        }
+
+        /* Sleek scrollbar */
+        #chat-window::-webkit-scrollbar { width: 8px; }
+        #chat-window::-webkit-scrollbar-thumb { background-color: #4a4a4a; border-radius: 4px; }
+        #chat-window::-webkit-scrollbar-track { background-color: #1a1a1a; }
+
+        /* Hide Django hidden inputs */
+        #hidden-message-input, #hidden-image-data { display: none !important; }
+
+        /* Loading dots */
+        @keyframes loading-dots { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        .dot { width: 8px; height: 8px; background-color: #5a94ff; border-radius: 50%; display: inline-block; margin: 0 2px; animation: loading-dots 1.4s infinite ease-in-out both; }
+        .dot:nth-child(1){ animation-delay:-0.32s; } .dot:nth-child(2){ animation-delay:-0.16s; }
+
+        .group:hover .copy-action-wrapper,
+        .copy-action-wrapper.show-on-mobile { opacity: 1; }
+
+        /* RTL support for Arabic/Persian languages */
+        .rtl-text {
+            direction: rtl;
+            text-align: right;
+            unicode-bidi: isolate;
+        }
+
+        /* LIGHT MODE OVERRIDES */
+        body.light-mode { background-color: #f3f4f6; color: #1f2937; }
+        body.light-mode #chat-container { background-color: #ffffff; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        body.light-mode .bg-gray-900 { background-color: #f9fafb !important; border-color:#e5e7eb !important; color:#1f2937 !important; }
+        body.light-mode .border-gray-700 { border-color:#e5e7eb !important; }
+        body.light-mode #input-container {
+            background-color: transparent !important;
+            background-image: linear-gradient(to right, #22d3ee, #0d9488) !important;
+            border-top: 1px solid rgba(255,255,255,0.5) !important;
+        }
+        body.light-mode #input-container .text-gray-400,
+        body.light-mode #input-container .text-gray-500,
+        body.light-mode #upload-image-btn { color:#1f2937 !important; }
+        body.light-mode .bg-gray-800 { background-color:#e5e7eb !important; color:#1f2937 !important; }
+        body.light-mode .bg-gray-700 { background-color:#ffffff !important; color:#1f2937 !important; }
+        body.light-mode #user-input { border: 1px solid #d1d5db; }
+        body.light-mode #chat-window::-webkit-scrollbar-thumb { background-color:#a1a1aa; }
+        body.light-mode #chat-window::-webkit-scrollbar-track { background-color:#f4f4f5; }
+    </style>
+</head>
+<body>
+
+<div id="chat-container" class="rounded-xl overflow-hidden">
+    <!-- Header -->
+    <header class="p-4 border-b border-gray-700 flex items-center justify-between text-white bg-gray-900 sticky top-0 z-10">
+        <h1 class="text-xl font-bold flex items-center">
+            <a href="{% url 'core:home' %}" class="flex items-center hover:opacity-80 transition duration-300">
+                <img src="{% static 'images/logo.png' %}" alt="FAMO Logo" class="h-6 w-auto mr-2">
+            </a>
+            Fammo Ai
+        </h1>
+                <div class="flex items-center space-x-3">
+            <button id="theme-toggle-btn" class="text-sm px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg transition" aria-label="Toggle Light/Dark Mode">
+                <span id="theme-icon">🌙</span>
+            </button>
+            <a href="?new=1" id="new-chat-btn" class="text-sm px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg transition">New Chat</a>
+                        {% if user_first %}
+                            <span class="hidden sm:inline text-sm px-2 py-1 rounded-lg bg-gray-800 border border-gray-700">👋 {{ user_first }}</span>
+                        {% endif %}
+                        {% if primary_pet %}
+                            <span class="hidden sm:inline text-sm px-2 py-1 rounded-lg bg-gray-800 border border-gray-700">🐾 {{ primary_pet.name }}</span>
+                        {% endif %}
+        </div>
+    </header>
+
+    <!-- Chat History -->
+    <main id="chat-window" role="log" class="flex flex-col space-y-4">
+        {% if history and history|length > 0 %}
+            {% for msg in history %}
+                <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %}">
+                    <div class="flex items-start max-w-xl group">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full {% if msg.role == 'user' %}bg-indigo-500 order-2 ml-3{% else %}bg-blue-500 mr-3{% endif %} flex items-center justify-center text-white font-bold text-sm">
+                            {% if msg.role == 'user' %}You{% else %}AI{% endif %}
+                        </div>
+                        <div class="message-content-wrapper flex items-end">
+                            <div class="copy-action-wrapper flex items-center {% if msg.role == 'user' %}order-1 mr-1.5{% else %}order-2 ml-1.5{% endif %} opacity-0 group-hover:opacity-100 transition duration-150 text-gray-400">
+                                <span class="copy-feedback text-xs font-medium text-green-400 opacity-0 transition-opacity duration-300 ease-out pointer-events-none mr-1.5">Copied!</span>
+                                <button type="button" class="copy-btn p-1 hover:text-white hover:bg-gray-700 rounded-full transition" title="Copy message" onclick="copyMessage(this)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect width="13" height="13" x="9" y="9" rx="2" ry="2"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="message-bubble-content {% if msg.role == 'user' %}bg-indigo-600 order-2{% else %}bg-gray-800 order-1{% endif %} p-4 rounded-xl shadow-lg text-white">
+                                {% if msg.image_url %}
+                                    <img src="{{ msg.image_url }}" alt="User image" class="rounded-lg max-w-full h-auto mb-2 border border-gray-600" style="max-width:300px;">
+                                {% endif %}
+                                <p class="message-text text-sm md:text-base whitespace-pre-wrap">{{ msg.text }}</p>
+                                {% if msg.suggestion_html %}
+                                <div class="message-suggestion text-sm md:text-base whitespace-pre-wrap mt-2">{{ msg.suggestion_html|safe }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="flex justify-start">
+                <div class="flex items-start max-w-xl group">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">AI</div>
+                    <div class="message-content-wrapper flex items-end">
+                        <div class="copy-action-wrapper flex items-center order-2 ml-1.5 opacity-0 group-hover:opacity-100 transition duration-150 text-gray-400">
+                            <span class="copy-feedback text-xs font-medium text-green-400 opacity-0 transition-opacity duration-300 ease-out pointer-events-none mr-1.5">Copied!</span>
+                            <button type="button" class="copy-btn p-1 hover:text-white hover:bg-gray-700 rounded-full transition" title="Copy message" onclick="copyMessage(this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect width="13" height="13" x="9" y="9" rx="2" ry="2"/>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="message-bubble-content bg-gray-800 order-1 p-4 rounded-xl shadow-lg text-white">
+                            <p class="message-text text-sm md:text-base">
+                                {% if greeting %}
+                                    {{ greeting }}
+                                {% else %}
+                                    Hi! Ask me anything about dog & cat care.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if primary_pet %}
+            <div class="flex justify-start">
+                <div class="flex items-start max-w-xl group">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 mr-3 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                    <div class="message-content-wrapper flex items-end">
+                        <div class="message-bubble-content bg-gray-800 order-1 p-4 rounded-xl shadow-lg text-white">
+                            <p class="message-text text-sm md:text-base">
+                                Profile on file for {{ primary_pet.name }}{% if primary_pet.pet_type %} ({{ primary_pet.pet_type.name }}){% endif %}{% if primary_pet.breed %}, {{ primary_pet.breed.name }}{% endif %}{% if primary_pet.weight %}, {{ primary_pet.weight }} kg{% endif %}. You can ask me about diet, health risks, and daily care.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% endif %}
+
+        {% if error %}
+            <div class="flex justify-center mt-4">
+                <div class="p-3 bg-red-800 text-red-100 rounded-xl shadow-lg max-w-md">
+                    <p class="font-bold">Error:</p>
+                    <p>{{ error }}</p>
+                </div>
+            </div>
+        {% endif %}
+    </main>
+
+    <!-- Fixed Input -->
+    <div id="input-container" class="flex flex-col">
+        <form method="post" id="chat-form">
+            {% csrf_token %}
+            <input type="hidden" name="message" id="hidden-message-input">
+            <input type="hidden" name="image_data" id="hidden-image-data">
+
+            <div id="image-preview-container" class="mb-2 hidden"></div>
+
+            <div class="relative flex items-center w-full">
+                <input type="file" id="image-input" accept="image/*" class="hidden">
+                <button id="upload-image-btn" type="button" class="flex-shrink-0 p-2 ml-1 mr-2 rounded-full text-gray-400 hover:text-blue-500 transition" aria-label="Upload Image">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                        <circle cx="9" cy="9" r="2"/>
+                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                    </svg>
+                </button>
+
+                <textarea
+                    id="user-input"
+                    class="flex-1 resize-none bg-gray-700 text-white rounded-2xl p-4 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 placeholder-gray-400 text-sm md:text-base"
+                    placeholder="Type your pet question…"
+                    rows="1"
+                ></textarea>
+
+                <button
+                    id="send-button"
+                    type="submit"
+                    class="absolute right-3 p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition duration-150 disabled:bg-gray-600 disabled:opacity-50"
+                    disabled
+                    aria-label="Send Message"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                        <path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>
+                    </svg>
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2 text-center">The AI response is handled by the Django server.</p>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Globals
+    let chatWindow, userInput, sendButton, chatForm, csrfToken = '';
+    let imageInput, uploadImageBtn, imagePreviewContainer;
+    let themeToggleBtn, themeIcon;
+    const THEME_KEY = 'petChatTheme';
+    let selectedImageBase64 = null, selectedImageMimeType = null;
+    let isLoading = false;
+
+    // Theme helpers
+    function applyTheme(isLight) {
+        if (isLight) {
+            document.body.classList.add('light-mode');
+            themeIcon.textContent = '☀️';
+            themeToggleBtn.classList.remove('bg-gray-700','hover:bg-gray-600');
+            themeToggleBtn.classList.add('bg-gray-200','text-gray-900','hover:bg-gray-300');
+        } else {
+            document.body.classList.remove('light-mode');
+            themeIcon.textContent = '🌙';
+            themeToggleBtn.classList.add('bg-gray-700','hover:bg-gray-600');
+            themeToggleBtn.classList.remove('bg-gray-200','text-gray-900','hover:bg-gray-300');
+        }
+        localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+    }
+    function toggleTheme(){ applyTheme(!document.body.classList.contains('light-mode')); }
+
+    // Enable/disable send
+    const checkSendButtonState = () => {
+        const hasText = userInput.value.trim().length > 0;
+        const hasImage = selectedImageBase64 !== null;
+        sendButton.disabled = !(hasText || hasImage) || isLoading;
+        uploadImageBtn.disabled = isLoading;
+        userInput.disabled = isLoading;
+    };
+
+    function adjustTextareaHeight(textarea) {
+        textarea.style.height = 'auto';
+        const maxHeight = 200;
+        textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
+    }
+
+    function clearImageInput() {
+        selectedImageBase64 = null;
+        selectedImageMimeType = null;
+        imageInput.value = '';
+        imagePreviewContainer.innerHTML = '';
+        imagePreviewContainer.classList.add('hidden');
+        checkSendButtonState();
+    }
+
+    const scrollToBottom = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
+
+    // Copy message
+    window.copyMessage = function(button) {
+        const messageContainer = button.closest('.message-content-wrapper');
+        const messageTextElement = messageContainer.querySelector('.message-text');
+        const textToCopy = messageTextElement.textContent.trim();
+        const feedbackSpan = messageContainer.querySelector('.copy-feedback');
+
+        const temp = document.createElement('textarea');
+        temp.value = textToCopy;
+        temp.style.position = 'fixed';
+        temp.style.left = '-9999px';
+        document.body.appendChild(temp);
+        temp.focus(); temp.select();
+        try { document.execCommand('copy'); } catch(e) { console.error('Copy failed', e); }
+        document.body.removeChild(temp);
+
+        feedbackSpan.classList.add('opacity-100');
+        setTimeout(() => feedbackSpan.classList.remove('opacity-100'), 1500);
+    };
+
+    // Renderers
+    function renderMessage(role, text, image_url = null, isHtml = false) {
+        const isUser = role === 'user';
+        const messageEl = document.createElement('div');
+        messageEl.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+        const bubbleContent = isHtml
+            ? `${image_url ? `<img src="${image_url}" alt="${isUser ? 'User image' : 'AI image'}" class="rounded-lg max-w-full h-auto mb-2 border border-gray-600" style="max-width:300px;">` : ''}${text}`
+            : `${image_url ? `<img src="${image_url}" alt="${isUser ? 'User image' : 'AI image'}" class="rounded-lg max-w-full h-auto mb-2 border border-gray-600" style="max-width:300px;">` : ''}<p class=\"message-text text-sm md:text-base whitespace-pre-wrap\">${text}</p>`;
+
+        messageEl.innerHTML = `
+            <div class="flex items-start max-w-xl group">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full ${isUser ? 'bg-indigo-500 order-2 ml-3' : 'bg-blue-500 mr-3'} flex items-center justify-center text-white font-bold text-sm">
+                    ${isUser ? 'You' : 'AI'}
+                </div>
+                <div class="message-content-wrapper flex items-end">
+                    <div class="copy-action-wrapper flex items-center ${isUser ? 'order-1 mr-1.5' : 'order-2 ml-1.5'} opacity-0 group-hover:opacity-100 transition duration-150 text-gray-400">
+                        <span class="copy-feedback text-xs font-medium text-green-400 opacity-0 transition-opacity duration-300 ease-out pointer-events-none mr-1.5">Copied!</span>
+                        <button type="button" class="copy-btn p-1 hover:text-white hover:bg-gray-700 rounded-full transition" title="Copy message" onclick="copyMessage(this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="13" height="13" x="9" y="9" rx="2" ry="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="message-bubble-content ${isUser ? 'bg-indigo-600 order-2' : 'bg-gray-800 order-1'} p-4 rounded-xl shadow-lg text-white">${bubbleContent}</div>
+                </div>
+            </div>`;
+        chatWindow.appendChild(messageEl);
+        scrollToBottom();
+        return messageEl;
+    }
+
+    function renderLoadingIndicator() {
+        const loadingEl = document.createElement('div');
+        loadingEl.id = 'loading-indicator';
+        loadingEl.className = 'flex justify-start';
+        loadingEl.innerHTML = `
+            <div class="flex items-start max-w-xl">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 mr-3 flex items-center justify-center text-white font-bold text-sm">AI</div>
+                <div class="bg-gray-800 p-4 rounded-xl shadow-lg text-white">
+                    <div class="flex items-center space-x-1">
+                        <span class="text-sm">AI is thinking...</span>
+                        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    </div>
+                </div>
+            </div>`;
+        chatWindow.appendChild(loadingEl);
+        scrollToBottom();
+        return loadingEl;
+    }
+
+    function updateLoadingIndicator(loadingEl, content, isHtml = false) {
+        if (loadingEl && chatWindow.lastChild === loadingEl) {
+            chatWindow.removeChild(loadingEl);
+        }
+        renderMessage('ai', content, null, isHtml);
+        // Apply RTL detection after rendering new message
+        detectAndApplyRTL();
+    }
+
+    // AJAX submission
+    async function sendChatMessage(query, imageData) {
+        if (isLoading || (!query && !imageData)) return;
+        isLoading = true;
+
+        // immediate UI
+        const fullImageDataUrl = imageData ? `data:${imageData}` : null;
+        renderMessage('user', query, fullImageDataUrl);
+        clearImageInput();
+        const loadingIndicator = renderLoadingIndicator();
+        checkSendButtonState();
+
+        try {
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', csrfToken);
+            formData.append('message', query);
+            formData.append('image_data', imageData || '');
+
+            const response = await fetch(chatForm.action || window.location.href, { method: 'POST', body: formData });
+            if (!response.ok) throw new Error(`Server returned status ${response.status}`);
+
+            const htmlText = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            const aiBubbles = doc.querySelectorAll('.justify-start .message-bubble-content');
+
+            let aiHtml = "Error: Could not parse AI response from server HTML.";
+            if (aiBubbles.length > 0) {
+                aiHtml = aiBubbles[aiBubbles.length - 1].innerHTML.trim();
+            }
+            updateLoadingIndicator(loadingIndicator, aiHtml, true);
+        } catch (error) {
+            console.error('Chat submission failed:', error);
+            updateLoadingIndicator(loadingIndicator, `[Error: Could not connect to AI server or parse response: ${error.message}]`);
+        } finally {
+            isLoading = false;
+            checkSendButtonState();
+            userInput.value = '';
+            adjustTextareaHeight(userInput);
+            userInput.focus();
+        }
+    }
+
+    // Init
+    window.onload = () => {
+        chatWindow = document.getElementById('chat-window');
+        userInput = document.getElementById('user-input');
+        sendButton = document.getElementById('send-button');
+        chatForm = document.getElementById('chat-form');
+        imageInput = document.getElementById('image-input');
+        uploadImageBtn = document.getElementById('upload-image-btn');
+        imagePreviewContainer = document.getElementById('image-preview-container');
+        themeToggleBtn = document.getElementById('theme-toggle-btn');
+        themeIcon = document.getElementById('theme-icon');
+
+        const csrfElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        csrfToken = csrfElement ? csrfElement.value : '';
+
+        // Theme
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(savedTheme === 'light' || (!savedTheme && prefersLight));
+        themeToggleBtn.addEventListener('click', toggleTheme);
+
+        // Input handlers
+        userInput.addEventListener('input', () => {
+            checkSendButtonState();
+            adjustTextareaHeight(userInput);
+        });
+        userInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                if (!sendButton.disabled) chatForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const query = userInput.value.trim();
+            if (!query && !selectedImageBase64) return;
+            sendChatMessage(query, selectedImageBase64);
+        });
+
+        // Image upload
+        uploadImageBtn.addEventListener('click', () => imageInput.click());
+        imageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                selectedImageMimeType = file.type;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImageBase64 = `${selectedImageMimeType};base64,${e.target.result.split(',')[1]}`;
+                    displayImagePreview(e.target.result);
+                    checkSendButtonState();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                clearImageInput();
+            }
+        });
+
+        // Initial layout
+        adjustTextareaHeight(userInput);
+        checkSendButtonState();
+        scrollToBottom();
+
+        // Apply RTL detection to existing messages
+        detectAndApplyRTL();
+
+        // Auto-submit if q/message in URL
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const initial = (params.get('q') || params.get('message') || '').trim();
+            if (initial) {
+                userInput.value = initial;
+                adjustTextareaHeight(userInput);
+                checkSendButtonState();
+                params.delete('q'); params.delete('message');
+                const newUrl = window.location.pathname + (params.toString() ? ('?' + params.toString()) : '');
+                window.history.replaceState({}, '', newUrl);
+                chatForm.dispatchEvent(new Event('submit'));
+            }
+        } catch(e) { console.warn('Init query parse failed:', e); }
+    };
+
+    // Detect RTL languages (Arabic, Persian, Hebrew, etc.) and apply RTL styling
+    function isRTLText(text) {
+        // Arabic: \u0600-\u06FF, Persian additions: \u0750-\u077F, Hebrew: \u0590-\u05FF
+        const rtlPattern = /[\u0600-\u06FF\u0750-\u077F\u0590-\u05FF\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+        return rtlPattern.test(text);
+    }
+
+    function detectAndApplyRTL() {
+        // Apply to all message text elements
+        document.querySelectorAll('.message-text, .message-suggestion').forEach(el => {
+            const text = el.textContent || el.innerText;
+            if (isRTLText(text)) {
+                el.classList.add('rtl-text');
+            }
+        });
+    }
+
+    function displayImagePreview(imageSrc) {
+        imagePreviewContainer.classList.remove('hidden');
+        imagePreviewContainer.innerHTML = `
+            <div class="relative inline-block border border-gray-600 rounded-lg overflow-hidden">
+                <img src="${imageSrc}" alt="Uploaded image preview" class="h-16 w-16 object-cover">
+                <button id="clear-image-btn" type="button" class="absolute top-1 right-1 bg-black bg-opacity-70 text-white rounded-full p-0.5 w-5 h-5 flex items-center justify-center text-xs hover:bg-opacity-100 transition" aria-label="Remove image">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                    </svg>
+                </button>
+            </div>`;
+        document.getElementById('clear-image-btn').addEventListener('click', clearImageInput);
+    }
+</script>
+
+</body>
+</html>

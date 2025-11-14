@@ -1,0 +1,228 @@
+<!-- Age Category Section -->
+<div class="mb-6">
+  <div class="mb-4 text-lg font-medium text-center opacity-90">
+    {% if form.pet_name %}
+      How old is {{ form.pet_name }}?
+    {% else %}
+      {{ form.age_category.label }}
+    {% endif %}
+  </div>
+  
+  <div class="grid grid-cols-3 gap-3 max-w-3xl mx-auto">
+    {% for choice in form.age_category %}
+      <label class="btn btn-outline btn-sm cursor-pointer age-category-btn" data-age-category="{{ choice.choice_label }}">
+        {{ choice.tag }}
+        <span class="ml-1 text-sm">{{ choice.choice_label }}</span>
+      </label>
+    {% endfor %}
+  </div>
+  {% for error in form.age_category.errors %}<div class="text-error text-sm mt-2 text-center">{{ error }}</div>{% endfor %}
+</div>
+
+<!-- Age Input Fields Section -->
+<div class="mb-6" id="age-inputs" style="display: none;">
+  <div class="mb-4 text-md font-medium text-center opacity-80">Enter the exact age:</div>
+  
+  <!-- Age input container -->
+  <div class="flex gap-4 justify-center max-w-md mx-auto" id="age-inputs-container">
+    <!-- Years field (hidden for young pets) -->
+    <div class="flex-1" id="years-field" style="display: none;">
+      <label class="form-control w-full">
+        <div class="label"><span class="label-text text-sm">{{ form.age_years.label }}</span></div>
+        {{ form.age_years }}
+        {% for error in form.age_years.errors %}<div class="text-error text-xs mt-1">{{ error }}</div>{% endfor %}
+      </label>
+    </div>
+    
+    <!-- Months field (always visible when age inputs are shown) -->
+    <div class="flex-1" id="months-field" style="display: block;">
+      <label class="form-control w-full">
+        <div class="label"><span class="label-text text-sm" id="months-label">{{ form.age_months.label }}</span></div>
+        {{ form.age_months }}
+        {% for error in form.age_months.errors %}<div class="text-error text-xs mt-1">{{ error }}</div>{% endfor %}
+      </label>
+    </div>
+    
+    <!-- Weeks field (hidden for older pets) -->
+    <div class="flex-1" id="weeks-field" style="display: none;">
+      <label class="form-control w-full">
+        <div class="label"><span class="label-text text-sm">{{ form.age_weeks.label }}</span></div>
+        {{ form.age_weeks }}
+        {% for error in form.age_weeks.errors %}<div class="text-error text-xs mt-1">{{ error }}</div>{% endfor %}
+      </label>
+    </div>
+  </div>
+</div>
+
+<!-- Store pet name for JavaScript -->
+<script>
+  window.petNameStep3 = '{{ form.pet_name|default:"" }}';
+  
+  // Step 3: Age category input handling
+  document.addEventListener('DOMContentLoaded', function() {
+      const ageCategoryInputs = document.querySelectorAll('input[name="step3-age_category"]');
+      const ageInputsSection = document.getElementById('age-inputs');
+      const yearsField = document.getElementById('years-field');
+      const monthsField = document.getElementById('months-field');
+      const weeksField = document.getElementById('weeks-field');
+      const monthsLabel = document.getElementById('months-label');
+      
+      const ageYearsInput = document.querySelector('input[name="step3-age_years"]');
+      const ageMonthsInput = document.querySelector('input[name="step3-age_months"]');
+      const ageWeeksInput = document.querySelector('input[name="step3-age_weeks"]');
+      
+      // Debug: Check if elements are found
+      console.log('Age category inputs:', ageCategoryInputs.length);
+      console.log('Age inputs section:', ageInputsSection);
+      console.log('Years field:', yearsField);
+      console.log('Months field:', monthsField);
+      console.log('Weeks field:', weeksField);
+      
+      function showAgeInputs(selectedCategory, { preserve = false } = {}) {
+          console.log('showAgeInputs called:', selectedCategory, 'preserve:', preserve); // Debug
+          
+          // Show the age inputs section
+          if (ageInputsSection) {
+              ageInputsSection.style.display = 'block';
+              console.log('Age inputs section shown'); // Debug
+          }
+          
+          // Only clear values when user explicitly changes category (not on initial load)
+          if (!preserve) {
+              if (ageYearsInput) ageYearsInput.value = '';
+              if (ageMonthsInput) ageMonthsInput.value = '';
+              if (ageWeeksInput) ageWeeksInput.value = '';
+              console.log('Values cleared'); // Debug
+          }
+          
+          // Determine which inputs to show based on category
+          const youngCategories = ['kitten', 'puppy', 'baby', 'young'];
+          const isYoung = youngCategories.some(cat => selectedCategory.toLowerCase().includes(cat));
+          console.log('Is young pet:', isYoung); // Debug
+          
+          if (isYoung) {
+              // Show months and weeks for young pets
+              if (yearsField) yearsField.style.display = 'none';
+              if (monthsField) monthsField.style.display = 'block';
+              if (weeksField) weeksField.style.display = 'block';
+              if (monthsLabel) monthsLabel.textContent = 'Months (0-12)';
+              
+              // Update months field max value for young pets
+              if (ageMonthsInput) {
+                  ageMonthsInput.setAttribute('max', '12');
+              }
+              console.log('Showing months and weeks for young pet'); // Debug
+          } else {
+              // Show years and months for older pets
+              if (yearsField) yearsField.style.display = 'block';
+              if (monthsField) monthsField.style.display = 'block';
+              if (weeksField) weeksField.style.display = 'none';
+              if (monthsLabel) monthsLabel.textContent = 'Months (0-11)';
+              
+              // Update months field max value for older pets
+              if (ageMonthsInput) {
+                  ageMonthsInput.setAttribute('max', '11');
+              }
+              console.log('Showing years and months for older pet'); // Debug
+          }
+      }
+      
+      if (ageCategoryInputs.length > 0) {
+          console.log('Found', ageCategoryInputs.length, 'age category inputs'); // Debug
+          
+          // When user changes category: DO clear values
+          ageCategoryInputs.forEach(function(input) {
+              input.addEventListener('change', function() {
+                  console.log('Age category changed:', this.checked); // Debug
+                  if (this.checked) {
+                      // Get the category name from the label text
+                      const label = this.closest('label');
+                      const labelText = label ? label.textContent.trim() : '';
+                      console.log('Label text:', labelText); // Debug
+                      
+                      // Extract the category type from the label (e.g., "Kitten" from "Kitten (Cat)")
+                      const categoryMatch = labelText.match(/^(\w+)/);
+                      const selectedCategory = categoryMatch ? categoryMatch[1] : '';
+                      console.log('Extracted category:', selectedCategory); // Debug
+                      
+                      if (selectedCategory) {
+                          showAgeInputs(selectedCategory, { preserve: false }); // Clear values on user change
+                      }
+                  }
+              });
+          });
+          
+          // On initial render: DO NOT clear (preserve values restored by Django)
+          const initiallyChecked = Array.from(ageCategoryInputs).find(input => input.checked);
+          console.log('Initially checked input:', initiallyChecked); // Debug
+          if (initiallyChecked) {
+              const label = initiallyChecked.closest('label');
+              const labelText = label ? label.textContent.trim() : '';
+              console.log('Initial label text:', labelText); // Debug
+              
+              // Extract the category type from the label
+              const categoryMatch = labelText.match(/^(\w+)/);
+              const selectedCategory = categoryMatch ? categoryMatch[1] : '';
+              console.log('Initial extracted category:', selectedCategory); // Debug
+              
+              if (selectedCategory) {
+                  showAgeInputs(selectedCategory, { preserve: true }); // Preserve values on initial load
+              }
+          }
+      } else {
+          console.log('No age category inputs found!'); // Debug
+      }
+  });
+</script>
+
+<style>
+  /* Hide the radio button but keep it functional */
+  input[type="radio"] {
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+  
+  /* Base age category button styling */
+  label.age-category-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid #d1d5db;
+    background-color: white;
+    color: #374151;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Age category hover effects - gradient colors by age */
+  label.age-category-btn:hover {
+    background-color: #10B981 !important;
+    border-color: #059669 !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+  
+  /* Selected state */
+  label.age-category-btn:has(input[type="radio"]:checked) {
+    background-color: #059669 !important;
+    border-color: #047857 !important;
+    color: white !important;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  }
+  
+  /* Active state (when clicking) */
+  label.age-category-btn:active {
+    transform: translateY(0px) scale(0.98);
+  }
+  
+  /* Focus outline for accessibility */
+  label.age-category-btn:focus-within {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+  }
+</style>

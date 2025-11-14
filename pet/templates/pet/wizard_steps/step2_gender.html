@@ -1,0 +1,137 @@
+<!-- Step 2: Gender and Neutered Status -->
+<div class="space-y-6">
+    <!-- Gender Section -->
+    <div class="text-center">
+        <label class="block text-lg font-bold text-gray-700 dark:text-gray-300 mb-4">
+            {% if form.pet_name %}
+                Is {{ form.pet_name }} a Girl or Boy?
+            {% else %}
+                {{ form.gender.label }}
+            {% endif %}
+        </label>
+        <div class="flex justify-center gap-6">
+            {% for choice in form.gender %}
+                <label class="gender-btn w-32 bg-white border-2 border-gray-300 rounded-xl p-4 cursor-pointer text-center transition duration-200 hover:border-blue-400">
+                    {{ choice.tag }}
+                    <div class="gender-label">
+                        {% if choice.choice_label == "Boy" %}
+                            <i class="fa-solid fa-mars text-3xl text-blue-500 mb-3 block"></i>
+                        {% elif choice.choice_label == "Girl" %}
+                            <i class="fa-solid fa-venus text-3xl text-pink-500 mb-3 block"></i>
+                        {% endif %}
+                        <div class="text-base font-medium text-gray-700">{{ choice.choice_label }}</div>
+                    </div>
+                </label>
+            {% endfor %}
+        </div>
+        {% if form.gender.errors %}
+            <p class="text-red-500 text-sm mt-3">{{ form.gender.errors|join:", " }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Neutered Section -->
+    <div class="text-center">
+        <label class="block text-lg font-bold text-gray-700 dark:text-gray-300 mb-4" id="neutered-label">
+            {% if form.pet_name %}
+                Is {{ form.pet_name }} neutered/spayed?
+            {% else %}
+                {{ form.neutered.label }}
+            {% endif %}
+        </label>
+        <div class="flex justify-center gap-6">
+            {% for choice in form.neutered %}
+                <label class="neutered-btn w-28 bg-white border-2 border-gray-300 rounded-xl p-4 cursor-pointer text-center transition duration-200 hover:border-blue-400">
+                    {{ choice.tag }}
+                    <div class="neutered-label">
+                        {% if choice.choice_label == "True" or choice.choice_label == "Yes" %}
+                            <i class="fa-solid fa-check text-2xl text-green-600 mb-2 block"></i>
+                            <div class="text-base font-medium text-gray-700">Yes</div>
+                        {% elif choice.choice_label == "False" or choice.choice_label == "No" %}
+                            <i class="fa-solid fa-xmark text-2xl text-red-600 mb-2 block"></i>
+                            <div class="text-base font-medium text-gray-700">No</div>
+                        {% else %}
+                            <div class="text-base font-medium text-gray-700">{{ choice.choice_label }}</div>
+                        {% endif %}
+                    </div>
+                </label>
+            {% endfor %}
+        </div>
+        {% if form.neutered.errors %}
+            <p class="text-red-500 text-sm mt-3">{{ form.neutered.errors|join:", " }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle gender radio button selection styling
+    const genderRadios = document.querySelectorAll('input[type="radio"][name="step2-gender"]');
+    const genderLabels = document.querySelectorAll('.gender-btn');
+    
+    // Handle neutered radio button selection styling
+    const neuteredRadios = document.querySelectorAll('input[type="radio"][name="step2-neutered"]');
+    const neuteredLabels = document.querySelectorAll('.neutered-btn');
+    
+    // Function to update button styles
+    function updateButtonStyles(radios, labels) {
+        labels.forEach(label => {
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio && radio.checked) {
+                label.classList.add('border-blue-600', 'bg-blue-50');
+                label.classList.remove('border-gray-300');
+            } else {
+                label.classList.remove('border-blue-600', 'bg-blue-50');
+                label.classList.add('border-gray-300');
+            }
+        });
+    }
+    
+    // Add click handlers for gender
+    genderLabels.forEach(label => {
+        label.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                updateButtonStyles(genderRadios, genderLabels);
+                updateNeuteredLabel();
+            }
+        });
+    });
+    
+    // Add click handlers for neutered
+    neuteredLabels.forEach(label => {
+        label.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                updateButtonStyles(neuteredRadios, neuteredLabels);
+            }
+        });
+    });
+    
+    // Function to update neutered label based on gender selection
+    function updateNeuteredLabel() {
+        const selectedGender = document.querySelector('input[name="step2-gender"]:checked');
+        const neuteredLabel = document.getElementById('neutered-label');
+        
+        if (selectedGender && neuteredLabel) {
+            const genderValue = selectedGender.value;
+            const genderName = selectedGender.parentElement.querySelector('.gender-label .text-base').textContent;
+            let pronoun = genderName === 'Girl' ? 'she' : 'he';
+            
+            // Get pet name from form if available
+            {% if form.pet_name %}
+                const petName = "{{ form.pet_name }}";
+                neuteredLabel.innerHTML = `Is ${petName} neutered/spayed?`;
+            {% else %}
+                neuteredLabel.innerHTML = `Is ${pronoun} neutered/spayed?`;
+            {% endif %}
+        }
+    }
+    
+    // Initial styling
+    updateButtonStyles(genderRadios, genderLabels);
+    updateButtonStyles(neuteredRadios, neuteredLabels);
+    updateNeuteredLabel();
+});
+</script>

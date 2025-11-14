@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Find Nearby Clinics" %} - FAMMO{% endblock %}
+
+{% block extra_css %}
+<style>
+    .btn-location {
+        @apply bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors;
+    }
+    .btn-success {
+        @apply bg-green-600 text-white px-6 py-3 rounded-lg;
+    }
+    .btn-error {
+        @apply bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700;
+    }
+    .clinic-card {
+        @apply bg-white rounded-lg shadow-md p-6 mb-4 border border-gray-200 hover:shadow-lg transition-shadow;
+    }
+    .distance-badge {
+        @apply inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium;
+    }
+    .spinner {
+        @apply inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin;
+    }
+    .location-info {
+        @apply bg-green-50 border border-green-200 rounded-lg p-4 mb-6;
+    }
+    .permission-prompt {
+        @apply bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">
+                {% trans "Find Veterinary Clinics Near You" %}
+            </h1>
+            <p class="text-lg text-gray-600">
+                {% trans "Allow location access to find the closest veterinary clinics" %}
+            </p>
+        </div>
+
+        <!-- Location Request Section -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+            <div id="location-status" class="mb-6">
+                <!-- Status messages will appear here -->
+            </div>
+
+            <div id="location-button-container" class="text-center mb-6">
+                <!-- Location button will be inserted here -->
+            </div>
+
+            <!-- Current Location Display -->
+            <div id="current-location" class="hidden location-info">
+                <h3 class="font-semibold text-green-800 mb-2">
+                    📍 {% trans "Your Location" %}
+                </h3>
+                <p class="text-sm text-gray-700">
+                    <strong>{% trans "Latitude:" %}</strong> <span id="user-lat"></span><br>
+                    <strong>{% trans "Longitude:" %}</strong> <span id="user-lng"></span><br>
+                    <strong>{% trans "Accuracy:" %}</strong> <span id="user-accuracy"></span> meters
+                </p>
+            </div>
+
+            <!-- Manual Location Input (Fallback) -->
+            <div class="border-t border-gray-200 pt-6 mt-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    {% trans "Or Enter Your Location Manually" %}
+                </h3>
+                <form id="manual-location-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="city-input" class="block text-sm font-medium text-gray-700 mb-1">
+                            {% trans "City" %}
+                        </label>
+                        <input type="text" id="city-input" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="{% trans 'Enter your city' %}">
+                    </div>
+                    <div>
+                        <label for="radius-select" class="block text-sm font-medium text-gray-700 mb-1">
+                            {% trans "Search Radius" %}
+                        </label>
+                        <select id="radius-select" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="5">5 km</option>
+                            <option value="10" selected>10 km</option>
+                            <option value="25">25 km</option>
+                            <option value="50">50 km</option>
+                            <option value="100">100 km</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="w-full bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                            {% trans "Search by City" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Nearby Clinics List -->
+        <div id="clinics-container" class="hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                {% trans "Nearby Clinics" %} (<span id="clinic-count">0</span>)
+            </h2>
+            <div id="clinics-list">
+                <!-- Clinic cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-clinics" class="hidden text-center py-8">
+            <div class="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-gray-600 mt-4">{% trans "Searching for nearby clinics..." %}</p>
+        </div>
+
+        <!-- No Results -->
+        <div id="no-clinics" class="hidden text-center py-8">
+            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-gray-600 text-lg">{% trans "No clinics found in your area" %}</p>
+            <p class="text-gray-500 text-sm mt-2">{% trans "Try increasing the search radius" %}</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/location.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    const locationStatus = document.getElementById('location-status');
+    const currentLocationDiv = document.getElementById('current-location');
+    const clinicsContainer = document.getElementById('clinics-container');
+    const clinicsList = document.getElementById('clinics-list');
+    const loadingClinics = document.getElementById('loading-clinics');
+    const noClinics = document.getElementById('no-clinics');
+
+    // Check for saved location
+    const savedLocation = locationService.getSavedLocation();
+    if (savedLocation) {
+        displayUserLocation(savedLocation);
+        searchNearbyClinics(savedLocation.latitude, savedLocation.longitude);
+    }
+
+    // Check location permission
+    const hasPermission = await locationService.checkLocationPermission();
+    if (hasPermission) {
+        locationStatus.innerHTML = `
+            <div class="permission-prompt">
+                <p class="text-yellow-800">
+                    ℹ️ {% trans "Location permission is granted. Click the button below to find nearby clinics." %}
+                </p>
+            </div>
+        `;
+    }
+
+    // Show location button
+    showLocationButton('location-button-container', {
+        className: 'btn-location',
+        text: '📍 {% trans "Use My Current Location" %}',
+        successClassName: 'btn-success',
+        errorClassName: 'btn-error',
+        onSuccess: function(location) {
+            displayUserLocation(location);
+            searchNearbyClinics(location.latitude, location.longitude);
+        },
+        onError: function(error) {
+            locationStatus.innerHTML = `
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p class="text-red-800">
+                        <strong>{% trans "Error:" %}</strong> ${error.message}
+                    </p>
+                    <p class="text-red-600 text-sm mt-2">
+                        {% trans "Please enable location access in your browser settings or use the manual search below." %}
+                    </p>
+                </div>
+            `;
+        }
+    });
+
+    // Manual location form
+    document.getElementById('manual-location-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const city = document.getElementById('city-input').value.trim();
+        const radius = document.getElementById('radius-select').value;
+        
+        if (!city) {
+            alert('{% trans "Please enter a city name" %}');
+            return;
+        }
+
+        searchClinicsByCity(city, radius);
+    });
+
+    function displayUserLocation(location) {
+        document.getElementById('user-lat').textContent = location.latitude.toFixed(6);
+        document.getElementById('user-lng').textContent = location.longitude.toFixed(6);
+        document.getElementById('user-accuracy').textContent = Math.round(location.accuracy || 0);
+        currentLocationDiv.classList.remove('hidden');
+    }
+
+    async function searchNearbyClinics(lat, lng, radius = 50) {
+        clinicsContainer.classList.add('hidden');
+        noClinics.classList.add('hidden');
+        loadingClinics.classList.remove('hidden');
+
+        try {
+            const response = await fetch(`/vets/api/nearby-clinics/?lat=${lat}&lng=${lng}&radius=${radius}`);
+            const data = await response.json();
+
+            loadingClinics.classList.add('hidden');
+
+            if (data.clinics && data.clinics.length > 0) {
+                displayClinics(data.clinics, lat, lng);
+            } else {
+                noClinics.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error fetching clinics:', error);
+            loadingClinics.classList.add('hidden');
+            locationStatus.innerHTML = `
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p class="text-red-800">
+                        {% trans "Error loading clinics. Please try again." %}
+                    </p>
+                </div>
+            `;
+        }
+    }
+
+    async function searchClinicsByCity(city, radius) {
+        clinicsContainer.classList.add('hidden');
+        noClinics.classList.add('hidden');
+        loadingClinics.classList.remove('hidden');
+
+        try {
+            const response = await fetch(`/vets/api/clinics-by-city/?city=${encodeURIComponent(city)}&radius=${radius}`);
+            const data = await response.json();
+
+            loadingClinics.classList.add('hidden');
+
+            if (data.clinics && data.clinics.length > 0) {
+                displayClinics(data.clinics);
+            } else {
+                noClinics.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error fetching clinics:', error);
+            loadingClinics.classList.add('hidden');
+        }
+    }
+
+    function displayClinics(clinics, userLat = null, userLng = null) {
+        // Sort by distance if we have user coordinates
+        if (userLat && userLng) {
+            clinics.forEach(clinic => {
+                if (clinic.latitude && clinic.longitude) {
+                    clinic.distance = locationService.calculateDistance(
+                        userLat, userLng, 
+                        clinic.latitude, clinic.longitude
+                    );
+                }
+            });
+            clinics.sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
+        }
+
+        clinicsList.innerHTML = clinics.map(clinic => `
+            <div class="clinic-card">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-2">
+                            ${clinic.logo ? 
+                                `<img src="${clinic.logo}" alt="${clinic.name}" class="w-12 h-12 rounded-full mr-3">` : 
+                                `<div class="w-12 h-12 bg-blue-100 rounded-full mr-3 flex items-center justify-center">
+                                    <span class="text-blue-600 font-bold text-lg">${clinic.name.charAt(0)}</span>
+                                </div>`
+                            }
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">
+                                    <a href="/vets/clinic/${clinic.slug}/" class="hover:text-blue-600">
+                                        ${clinic.name}
+                                    </a>
+                                </h3>
+                                ${clinic.is_verified ? '<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">✓ Verified</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600 space-y-1 ml-15">
+                            ${clinic.address ? `<p>📍 ${clinic.address}, ${clinic.city}</p>` : `<p>📍 ${clinic.city}</p>`}
+                            ${clinic.phone ? `<p>📞 ${clinic.phone}</p>` : ''}
+                            ${clinic.working_hours ? `<p>🕒 ${clinic.working_hours}</p>` : ''}
+                            ${clinic.specializations ? `<p>🏥 ${clinic.specializations}</p>` : ''}
+                        </div>
+                    </div>
+                    ${clinic.distance !== undefined ? 
+                        `<span class="distance-badge">${locationService.formatDistance(clinic.distance)}</span>` : 
+                        ''
+                    }
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <a href="/vets/clinic/${clinic.slug}/" 
+                       class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                        {% trans "View Details" %}
+                    </a>
+                    ${clinic.phone ? 
+                        `<a href="tel:${clinic.phone}" 
+                            class="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
+                            📞 {% trans "Call Now" %}
+                        </a>` : 
+                        ''
+                    }
+                    ${clinic.latitude && clinic.longitude ? 
+                        `<a href="https://www.google.com/maps/dir/?api=1&destination=${clinic.latitude},${clinic.longitude}" 
+                            target="_blank"
+                            class="inline-block bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm">
+                            🗺️ {% trans "Directions" %}
+                        </a>` : 
+                        ''
+                    }
+                </div>
+            </div>
+        `).join('');
+
+        document.getElementById('clinic-count').textContent = clinics.length;
+        clinicsContainer.classList.remove('hidden');
+    }
+});
+</script>
+{% endblock %}

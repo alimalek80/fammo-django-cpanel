@@ -1,0 +1,132 @@
+<!-- Treat Frequency Selection Section -->
+<div class="mb-6">
+  <div class="mb-6 text-lg font-medium text-center opacity-90">
+    {% if form.pet_name %}
+      How often does {{ form.pet_name }} get treats?
+    {% else %}
+      {{ form.treat_frequency.label }}
+    {% endif %}
+  </div>
+  
+  <!-- Treat Frequency Options -->
+  <div class="grid grid-cols-1 gap-4 max-w-2xl mx-auto">
+    {% for choice in form.treat_frequency %}
+      <label class="btn btn-outline btn-lg cursor-pointer treat-frequency-btn hover:btn-primary transition-all duration-200 p-6 h-auto text-left">
+        {{ choice.tag }}
+        <div class="ml-4 flex-1">
+          <div class="text-xl font-bold mb-2">{{ choice.choice_label }}</div>
+          <div class="text-sm opacity-75 font-normal">
+            {% for frequency in form.treat_frequencies %}
+              {% if frequency.name == choice.choice_label %}
+                {{ frequency.description }}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </label>
+    {% endfor %}
+  </div>
+  
+  <!-- Error Display -->
+  {% for error in form.treat_frequency.errors %}
+    <div class="text-error text-sm mt-4 text-center">{{ error }}</div>
+  {% endfor %}
+  
+  <!-- Form-level errors -->
+  {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+      <div class="text-error text-sm mt-2 text-center">{{ error }}</div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- Store pet name for JavaScript -->
+<script>
+  window.petNameStep13TreatFrequency = '{{ form.pet_name|default:"" }}';
+  
+  // Step 13: Treat frequency selection handling
+  document.addEventListener('DOMContentLoaded', function() {
+      const frequencyButtons = document.querySelectorAll('.treat-frequency-btn');
+      
+      console.log('Step 13 Debug Info:');
+      console.log('Found frequency buttons:', frequencyButtons.length);
+      
+      // Find the hidden radio buttons
+      const radioButtons = document.querySelectorAll('input[name="step13-treat_frequency"]');
+      console.log('Found radio buttons:', radioButtons.length);
+      
+      // Add click handlers to labels (they should automatically handle radio button selection)
+      frequencyButtons.forEach((button, index) => {
+          button.addEventListener('click', function() {
+              console.log('Frequency button clicked:', index);
+              
+              // Update visual states
+              updateButtonStates();
+          });
+      });
+      
+      // Listen for radio button changes
+      radioButtons.forEach(radio => {
+          radio.addEventListener('change', function() {
+              console.log('Radio changed:', this.value);
+              updateButtonStates();
+          });
+      });
+      
+      function updateButtonStates() {
+          // Remove selected state from all buttons
+          frequencyButtons.forEach(btn => {
+              btn.classList.remove('btn-primary');
+              btn.classList.add('btn-outline');
+          });
+          
+          // Find the selected radio and highlight its button
+          const selectedRadio = document.querySelector('input[name="step13-treat_frequency"]:checked');
+          if (selectedRadio) {
+              // Find the corresponding button (the label that contains this radio)
+              const selectedButton = selectedRadio.closest('.treat-frequency-btn');
+              if (selectedButton) {
+                  selectedButton.classList.remove('btn-outline');
+                  selectedButton.classList.add('btn-primary');
+                  console.log('Highlighted selected button');
+              }
+          }
+      }
+      
+      // Initial state update
+      setTimeout(() => {
+          updateButtonStates();
+      }, 100);
+  });
+</script>
+
+<style>
+  /* Hide radio buttons but keep them functional */
+  .treat-frequency-btn input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+  }
+  
+  /* Treat frequency button styling */
+  .treat-frequency-btn {
+      transition: all 0.2s ease;
+  }
+  
+  .treat-frequency-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .treat-frequency-btn.btn-primary {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+  
+  .treat-frequency-btn.btn-primary .text-sm {
+      color: rgba(255, 255, 255, 0.9);
+  }
+</style>

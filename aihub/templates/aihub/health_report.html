@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load markdownify %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto p-8 mt-8 mb-12">
+    <!-- Header with gradient background -->
+    <div class="rounded-2xl shadow-2xl p-8 mb-8 text-white" style="background: linear-gradient(to right, #dc2626, #f43f5e, #ec4899);">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold mb-2">🏥 AI Health Report</h1>
+                <p class="text-lg" style="color: #fecdd3;">Comprehensive health analysis for {{ pet.name }}</p>
+            </div>
+            <div class="hidden md:block text-6xl" style="opacity: 0.2;">❤️</div>
+        </div>
+    </div>
+
+    {% if report.summary_json %}
+        {% with data=report.summary_json %}
+        <!-- Health Summary -->
+        <section class="mb-8 border-2 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow" style="background: linear-gradient(to bottom right, #fff1f2, #fce7f3); border-color: #fda4af;">
+            <div class="flex items-center mb-4">
+                <span class="text-3xl mr-3">🩺</span>
+                <h3 class="font-bold text-xl" style="color: #881337;">Health Summary</h3>
+            </div>
+            <p class="leading-relaxed bg-white rounded-lg p-4 shadow-sm" style="color: #374151;">{{ data.health_summary }}</p>
+        </section>
+
+        <!-- Breed Risks & Weight/Diet Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <section class="border-2 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow" style="background: linear-gradient(to bottom right, #faf5ff, #e0e7ff); border-color: #e9d5ff;">
+                <div class="flex items-center mb-4">
+                    <span class="text-3xl mr-3">🧬</span>
+                    <h3 class="font-bold text-xl" style="color: #581c87;">Breed-Specific Health Risks</h3>
+                </div>
+                <ul class="space-y-3">
+                    {% for r in data.breed_risks %}
+                        <li class="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow flex items-start" style="border-left: 4px solid #a855f7;">
+                            <span class="font-bold mr-2 mt-0.5" style="color: #a855f7;">•</span>
+                            <span class="text-sm" style="color: #374151;">{{ r }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="italic text-center py-4" style="color: #9ca3af;">No specific risks listed.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            
+            <section class="border-2 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow" style="background: linear-gradient(to bottom right, #fffbeb, #ffedd5); border-color: #fde68a;">
+                <div class="flex items-center mb-4">
+                    <span class="text-3xl mr-3">⚖️</span>
+                    <h3 class="font-bold text-xl" style="color: #78350f;">Weight and Diet Overview</h3>
+                </div>
+                <p class="leading-relaxed bg-white rounded-lg p-4 shadow-sm" style="color: #374151;">{{ data.weight_and_diet }}</p>
+            </section>
+        </div>
+
+        <!-- Feeding & Activity Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <section class="border-2 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow" style="background: linear-gradient(to bottom right, #f0fdf4, #d1fae5); border-color: #bbf7d0;">
+                <div class="flex items-center mb-4">
+                    <span class="text-3xl mr-3">🍽️</span>
+                    <h3 class="font-bold text-xl" style="color: #065f46;">Feeding Recommendations</h3>
+                </div>
+                <ul class="space-y-3">
+                    {% for tip in data.feeding_tips %}
+                        <li class="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow flex items-start" style="border-left: 4px solid #22c55e;">
+                            <span class="font-bold mr-2 mt-0.5" style="color: #22c55e;">✓</span>
+                            <span class="text-sm" style="color: #374151;">{{ tip }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="italic text-center py-4" style="color: #9ca3af;">No feeding tips.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            
+            <section class="border-2 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow" style="background: linear-gradient(to bottom right, #eff6ff, #cffafe); border-color: #bfdbfe;">
+                <div class="flex items-center mb-4">
+                    <span class="text-3xl mr-3">🏃</span>
+                    <h3 class="font-bold text-xl" style="color: #1e40af;">Activity Recommendations</h3>
+                </div>
+                <p class="leading-relaxed bg-white rounded-lg p-4 shadow-sm" style="color: #374151;">{{ data.activity }}</p>
+            </section>
+        </div>
+
+        <!-- Critical Alerts -->
+        <section class="border-2 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-shadow" style="background: linear-gradient(to bottom right, #fef2f2, #ffedd5); border-color: #fca5a5;">
+            <div class="flex items-center mb-4">
+                <span class="text-3xl mr-3">⚠️</span>
+                <h3 class="font-bold text-2xl" style="color: #991b1b;">Critical Alerts</h3>
+            </div>
+            <ul class="space-y-3">
+                {% if data.alerts and data.alerts|length > 0 %}
+                    {% for a in data.alerts %}
+                        <li class="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow flex items-start" style="border-left: 4px solid #dc2626;">
+                            <span class="font-bold text-xl mr-3 mt-0.5" style="color: #dc2626;">!</span>
+                            <span class="font-medium" style="color: #1f2937;">{{ a }}</span>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="bg-white rounded-lg p-4 shadow-sm text-center">
+                        <span class="font-bold text-lg" style="color: #16a34a;">✅ No critical issues detected</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </section>
+        {% endwith %}
+    {% else %}
+        <div class="p-8 rounded-2xl border-2 shadow-lg" style="background: linear-gradient(to bottom right, #f9fafb, #f3f4f6); border-color: #e5e7eb;">
+            <div class="prose max-w-none">
+                {{ report.summary|markdownify }}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Footer with back button -->
+    <div class="text-center mt-8">
+        <a href="{% url 'pet:my_pets' %}" class="inline-flex items-center gap-2 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all transform hover:scale-105" style="background: linear-gradient(to right, #dc2626, #f43f5e);">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Back to My Pets
+        </a>
+    </div>
+</div>
+{% endblock %}

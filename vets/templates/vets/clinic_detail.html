@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load vets_tags %}
+
+{% block title %}{{ clinic.name }} - {% trans "Veterinary Clinic" %} - FAMMO{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Clinic Header -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8">
+            <div class="p-8">
+                <div class="flex items-start justify-between mb-6">
+                    <div class="flex-1">
+                        <div class="flex items-center mb-2">
+                            <h1 class="text-3xl font-bold text-gray-900 mr-3">{{ clinic.name }}</h1>
+                            {% if clinic.admin_approved %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                {% trans "Verified Partner" %}
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% if clinic.city %}
+                        <p class="text-lg text-gray-600 mb-4">📍 {{ clinic.city }}</p>
+                        {% endif %}
+                    </div>
+                    {% if clinic.logo %}
+                    <img src="{{ clinic.logo.url }}" alt="{{ clinic.name }}" class="w-24 h-24 rounded-lg object-cover border-2 border-gray-100" style="width: 96px; height: 96px; object-fit: cover; border-radius: 8px; border: 2px solid #f3f4f6;">
+                    {% endif %}
+                </div>
+
+                <!-- Quick Info -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    {% if clinic.phone %}
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">{% trans "Phone" %}</p>
+                            <p class="font-medium">{{ clinic.phone }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if clinic.working_hours %}
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">{% trans "Hours" %}</p>
+                            <p class="font-medium">{{ clinic.working_hours }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if clinic.email %}
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 7.89a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">{% trans "Email" %}</p>
+                            <p class="font-medium">{{ clinic.email }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Contact Actions -->
+                <div class="flex flex-wrap gap-3" style="display: flex; flex-wrap: wrap; gap: 12px;">
+                    {% if clinic.phone %}
+                    <a href="tel:{{ clinic.phone }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors" style="padding: 8px 16px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 6px; display: inline-block;">
+                        📞 {% trans "Call Now" %}
+                    </a>
+                    {% endif %}
+                    
+                    {% if clinic.email %}
+                    <a href="mailto:{{ clinic.email }}" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors" style="padding: 8px 16px; background-color: #4b5563; color: white; text-decoration: none; border-radius: 6px; display: inline-block;">
+                        ✉️ {% trans "Send Email" %}
+                    </a>
+                    {% endif %}
+                    
+                    {% if clinic.website %}
+                    <a href="{{ clinic.website }}" target="_blank" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors" style="padding: 8px 16px; background-color: #16a34a; color: white; text-decoration: none; border-radius: 6px; display: inline-block;">
+                        🌐 {% trans "Visit Website" %}
+                    </a>
+                    {% endif %}
+                    
+                    {% if referral_url %}
+                    <button onclick="copyReferralLink()" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors" style="padding: 8px 16px; background-color: #eab308; color: white; border: none; border-radius: 6px; cursor: pointer; display: inline-block; transition: all 0.2s ease;">
+                        🔗 {% trans "Share Referral" %}
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 clinic-layout" style="display: grid; grid-template-columns: 1fr; gap: 32px;">
+            <style>
+                @media (min-width: 1024px) {
+                    .clinic-layout {
+                        display: grid !important;
+                        grid-template-columns: 2fr 1fr !important;
+                        gap: 32px !important;
+                    }
+                    .main-content {
+                        grid-column: 1 / 2 !important;
+                    }
+                    .sidebar-content {
+                        grid-column: 2 / 3 !important;
+                    }
+                }
+            </style>
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-8 main-content" style="grid-column: span 2;">
+                <script>
+                    // Ensure proper layout on cPanel
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const container = document.querySelector('.clinic-layout');
+                        if (container && window.innerWidth >= 1024) {
+                            container.style.display = 'grid';
+                            container.style.gridTemplateColumns = '2fr 1fr';
+                            container.style.gap = '32px';
+                        }
+                    });
+                </script>
+                <!-- About Section -->
+                {% if clinic.bio %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">{% trans "About" %}</h2>
+                    <div class="prose prose-gray max-w-none">
+                        {{ clinic.bio|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Veterinarian Profile -->
+                {% if clinic.vet_profile %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">{% trans "Lead Veterinarian" %}</h2>
+                    <div class="space-y-3">
+                        <h3 class="text-lg font-medium text-gray-900">{{ clinic.vet_profile.vet_name }}</h3>
+                        
+                        {% if clinic.vet_profile.degrees %}
+                        <div>
+                            <span class="text-sm font-medium text-gray-500">{% trans "Qualifications:" %}</span>
+                            <p class="text-gray-700">{{ clinic.vet_profile.degrees }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if clinic.vet_profile.certifications %}
+                        <div>
+                            <span class="text-sm font-medium text-gray-500">{% trans "Certifications:" %}</span>
+                            <p class="text-gray-700">{{ clinic.vet_profile.certifications|linebreaks }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Address Section -->
+                {% if clinic.address %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">{% trans "Location" %}</h2>
+                    <div class="space-y-2">
+                        <p class="text-gray-700">{{ clinic.address|linebreaks }}</p>
+                        {% if clinic.city %}
+                        <p class="text-gray-600">{{ clinic.city }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6 sidebar-content">
+                <!-- Specializations -->
+                {% if clinic.specializations %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">{% trans "Specializations" %}</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for spec in clinic.specializations|split:"," %}
+                        <span class="inline-block px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full">
+                            {{ spec|strip }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Social Media -->
+                {% if clinic.instagram or clinic.website %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">{% trans "Follow Us" %}</h3>
+                    <div class="space-y-3">
+                        {% if clinic.instagram %}
+                        <a href="{% if 'http' in clinic.instagram %}{{ clinic.instagram }}{% else %}https://instagram.com/{{ clinic.instagram|cut:'@' }}{% endif %}" 
+                           target="_blank" 
+                           class="flex items-center text-pink-600 hover:text-pink-700">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987s11.987-5.367 11.987-11.987C24.004 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.324-1.297L6.973 13.94c.652.652 1.555 1.055 2.555 1.055 1.997 0 3.608-1.611 3.608-3.608s-1.611-3.608-3.608-3.608c-1 0-1.903.403-2.555 1.055L5.125 7.082c.876-.806 2.027-1.297 3.324-1.297 2.711 0 4.917 2.206 4.917 4.917s-2.206 4.917-4.917 4.917z"/>
+                            </svg>
+                            Instagram
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Call to Action -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">{% trans "Join FAMMO" %}</h3>
+                    <p class="text-sm text-gray-600 mb-4">
+                        {% trans "Get personalized pet care recommendations and connect with trusted vets." %}
+                    </p>
+                    {% if referral_url %}
+                    <a href="{% url 'register' %}?ref={{ referral_code }}" 
+                       class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors" style="display: block; width: 100%; text-align: center; padding: 8px 16px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 6px;">
+                        {% trans "Sign Up with This Clinic" %}
+                    </a>
+                    {% else %}
+                    <a href="{% url 'register' %}" 
+                       class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors" style="display: block; width: 100%; text-align: center; padding: 8px 16px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 6px;">
+                        {% trans "Sign Up for FAMMO" %}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if referral_url %}
+<script>
+function copyReferralLink() {
+    const url = "{{ referral_url }}";
+    navigator.clipboard.writeText(url).then(function() {
+        // Get the button that was clicked
+        const button = event.target;
+        const originalText = button.innerHTML;
+        const originalBgColor = button.style.backgroundColor;
+        
+        // Add push effect
+        button.style.transform = 'scale(0.95)';
+        
+        // Change to "Copied!" with green background and checkmark
+        button.innerHTML = '<i class="fas fa-check mr-1"></i>{% trans "Copied!" %}';
+        button.style.backgroundColor = '#10b981';
+        button.style.fontWeight = '600';
+        
+        // Reset transform after push effect
+        setTimeout(function() {
+            button.style.transform = 'scale(1)';
+        }, 100);
+        
+        // Revert back to original after 2 seconds
+        setTimeout(function() {
+            button.innerHTML = originalText;
+            button.style.backgroundColor = originalBgColor || '#eab308';
+            button.style.fontWeight = '500';
+        }, 2000);
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+        alert('{% trans "Could not copy link. Please try again." %}');
+    });
+}
+</script>
+{% endif %}
+{% endblock %}

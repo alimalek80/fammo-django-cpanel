@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load markdownify %}
+{% block title %}{{ post.title }} | FAMMO{% endblock %}
+
+{% block meta_description %}
+    {{ post.meta_description|default:post.content|truncatewords:25|striptags }}
+{% endblock %}
+{% block meta_keywords %}
+    {{ post.meta_keywords|default:post.title }}, {{ post.category.name }}, FAMO, pet blog, pet health, pet nutrition
+{% endblock %}
+{% block extra_head %}
+  <meta property="og:title" content="{{ post.title|striptags }}" />
+  <meta property="og:description" content="{{ post.meta_description|default:post.content|striptags|truncatewords:30 }}" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="{{ absolute_url }}" />
+  {% if image_url %}
+    <meta property="og:image" content="{{ image_url }}" />
+    <meta name="twitter:image" content="{{ image_url }}" />
+  {% endif %}
+  <meta name="twitter:card" content="{% if image_url %}summary_large_image{% else %}summary{% endif %}" />
+{% endblock %}
+
+{% block content %}
+<article class="blog-article max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8 mb-12">
+    {% if post.image %}
+    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-80 object-cover rounded-lg mb-6">
+    {% endif %}
+    <h1 class="text-3xl font-extrabold text-indigo-700 mb-2">{{ post.title }}</h1>
+
+    <div class="flex items-center space-x-4 text-gray-500 mb-6 text-sm">
+        <span><i class="fa-solid fa-user"></i>
+            {% if post.author.profile.first_name or post.author.profile.last_name %}
+                {{ post.author.profile.first_name }} {{ post.author.profile.last_name }}
+            {% else %}
+                {{ post.author.email }}
+            {% endif %}
+        </span>
+        <span><i class="fa-solid fa-calendar"></i> {{ post.published_at|date:"M d, Y" }}</span>
+        <span>
+            <i class="fa-solid fa-star text-yellow-500"></i>
+            {% with avg=post.average_rating %}
+                {% if avg %}
+                    <span class="font-semibold text-gray-800">{{ avg }}</span>
+                {% else %}
+                    <span class="text-gray-400">{% trans "No ratings" %}</span>
+                {% endif %}
+            {% endwith %}
+        </span>
+        <span>
+            <i class="fa-solid fa-comments"></i> {{ post.comments.count }} {% trans "Comments" %}
+        </span>
+        <span>
+            <i class="fa-solid fa-eye"></i> {{ post.views }}
+        </span>
+    </div>
+
+    <!-- BLOG BODY (prose without color theme) -->
+    <div class="markdown-content prose prose-lg max-w-none mb-8
+                prose-headings:text-indigo-700
+                prose-p:text-gray-900 prose-li:text-gray-900 prose-strong:text-gray-900
+                prose-a:text-indigo-600 hover:prose-a:text-indigo-700
+                prose-table:border prose-table:border-gray-300
+                prose-th:border prose-th:border-gray-300 prose-th:bg-gray-100
+                prose-td:border prose-td:border-gray-200">
+        {{ post.content|markdownify }}
+    </div>
+
+    <!-- Category Badge -->
+    <span class="text-sm bg-gray-100 text-gray-800 px-2 py-1 rounded">
+        {{ post.category.name }}
+    </span>
+
+    <div class="divider divider-success">Rate it</div>
+
+    {% if user.is_authenticated %}
+<form method="post" action="{% url 'rate_post' post.slug %}" class="mb-8 items-center gap-3">
+  {% csrf_token %}
+  
+
+  <!-- DaisyUI rating with previous-stars colored when selected -->
+<style>
+.rating {
+  display: flex;
+  flex-direction: row-reverse; /* visual order left-to-right = 1..5 */
+  gap: .25rem;
+  align-items: center;
+}
+
+/* base star look (unselected) */
+.rating > input {
+  background-color: #5c5c5c; /* gray */
+  width: 2.25rem;
+  height: 2.25rem;
+  cursor: pointer;
+  transition: background-color .12s ease, opacity .12s ease;
+}
+
+
+/* make checked star AND all previous (lower-value) stars the same yellow and opacity */
+.rating > input:checked,
+.rating > input:checked ~ input {
+  background-color: #f59e0b; /* yellow */
+  opacity: 1;
+}
+
+/* optional: hover gives same yellow for preview */
+.rating > input:hover,
+.rating > input:hover ~ input {
+  background-color: #f7b733; /* slightly different yellow on hover */
+  opacity: 1;
+}
+/* force primary buttons to white text if something overrides it */
+.btn.btn-primary,
+.btn-primary {
+  color: #ffffff !important;
+}
+</style>
+
+
+<div class="rating rating-md justify-center">
+  <!-- DOM: 5..1 (so checked ~ input works). Visual: row-reverse => left-to-right shows 1..5 -->
+  <input type="radio" name="rating" value="5" title="5" aria-label="5" class="mask mask-star-2"
+         {% if user_rating and user_rating.value == 5 %}checked{% endif %} />
+  <input type="radio" name="rating" value="4" title="4" aria-label="4" class="mask mask-star-2"
+         {% if user_rating and user_rating.value == 4 %}checked{% endif %} />
+  <input type="radio" name="rating" value="3" title="3" aria-label="3" class="mask mask-star-2"
+         {% if user_rating and user_rating.value == 3 %}checked{% endif %} />
+  <input type="radio" name="rating" value="2" title="2" aria-label="2" class="mask mask-star-2"
+         {% if user_rating and user_rating.value == 2 %}checked{% endif %} />
+  <input type="radio" name="rating" value="1" title="1" aria-label="1" class="mask mask-star-2"
+         {% if user_rating and user_rating.value == 1 %}checked{% endif %}
+         {% if not user_rating %} required{% endif %} />
+</div>
+<div class="justify-center mt-4">
+  <div class="flex flex-col sm:flex-row items-center justify-center mt-4 gap-2">
+  <button type="submit" class="btn btn-primary btn-sm text-white">
+    {% trans "Submit" %}
+  </button>
+
+  {% if user_rating %}
+    <span class="text-sm text-gray-500">
+      {% trans "You rated:" %} {{ user_rating.value }}
+    </span>
+  {% endif %}
+</div>
+</div>
+</form>
+{% endif %}  <!-- <-- ADD this to close the rating check -->
+
+{# Share buttons: build one text payload and urlencode it once #}
+{% with share_title=post.title share_desc=post.meta_description|default:post.content|striptags|truncatewords:30 share_url=absolute_url %}
+  {% if image_url %}
+    {% with share_text=share_title|add:"\n\n"|add:share_desc|add:"\n\n"|add:share_url|add:"\n\n"|add:image_url %}
+      <div class="w-full flex justify-center my-6">
+        <div class="inline-flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 shadow-sm">
+          <span class="text-sm font-semibold text-gray-600 mr-2">{% trans "Share this post:" %}</span>
+
+          <!-- WhatsApp: full encoded text (title + desc + link) -->
+    <a href="https://api.whatsapp.com/send?text={{ share_text_encoded }}"
+       target="_blank" rel="noopener noreferrer"
+       class="btn btn-ghost btn-sm text-green-600 hover:bg-green-50" aria-label="Share on WhatsApp">
+      <i class="fa-brands fa-whatsapp text-xl"></i>
+    </a>
+
+    <!-- Email: subject + body (body uses desc + url) -->
+    <a href="mailto:?subject={{ post.title|urlencode }}&body={{ post.meta_description|default:post.content|striptags|truncatewords:30|urlencode }}%0A%0A{{ absolute_url|urlencode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="btn btn-ghost btn-sm text-gray-700 hover:bg-gray-100" aria-label="Share by Email">
+      <i class="fa-solid fa-envelope text-xl"></i>
+    </a>
+
+    <!-- Telegram: use page URL + small text (clients will use OG tags for preview) -->
+    <a href="https://t.me/share/url?url={{ absolute_url|urlencode }}&text={{ post.title|add:' - '|add:post.meta_description|default:post.content|striptags|truncatewords:30|urlencode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="btn btn-ghost btn-sm text-blue-500 hover:bg-blue-50" aria-label="Share on Telegram">
+      <i class="fa-brands fa-telegram text-xl"></i>
+    </a>
+
+    <!-- LinkedIn / Facebook rely on OG tags (image will be used) -->
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ absolute_url|urlencode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="btn btn-ghost btn-sm text-blue-700 hover:bg-blue-50" aria-label="Share on LinkedIn">
+      <i class="fa-brands fa-linkedin text-xl"></i>
+    </a>
+
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ absolute_url|urlencode }}"
+       target="_blank" rel="noopener noreferrer"
+       class="btn btn-ghost btn-sm text-blue-600 hover:bg-blue-50" aria-label="Share on Facebook">
+      <i class="fa-brands fa-facebook text-xl"></i>
+    </a>
+        </div>
+      </div>
+    {% endwith %}
+  {% else %}
+    {% with share_text=share_title|add:"\n\n"|add:share_desc|add:"\n\n"|add:share_url %}
+      <div class="w-full flex justify-center my-6">
+        <div class="inline-flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 shadow-sm">
+          <span class="text-sm font-semibold text-gray-600 mr-2">{% trans "Share this post:" %}</span>
+
+          <a href="https://api.whatsapp.com/send?text={{ share_text|urlencode }}"
+             target="_blank" rel="noopener noreferrer"
+             class="btn btn-ghost btn-sm text-green-600 hover:bg-green-50" aria-label="Share on WhatsApp">
+            <i class="fa-brands fa-whatsapp text-xl"></i>
+          </a>
+
+          <a href="mailto:?subject={{ share_title|urlencode }}&body={{ share_desc|add:'\n\n'|add:share_url|urlencode }}"
+             target="_blank" rel="noopener noreferrer"
+             class="btn btn-ghost btn-sm text-gray-700 hover:bg-gray-100" aria-label="Share by Email">
+            <i class="fa-solid fa-envelope text-xl"></i>
+          </a>
+
+          <a href="https://t.me/share/url?url={{ share_url|urlencode }}&text={{ share_title|add:' - '|add:share_desc|urlencode }}"
+             target="_blank" rel="noopener noreferrer"
+             class="btn btn-ghost btn-sm text-blue-500 hover:bg-blue-50" aria-label="Share on Telegram">
+            <i class="fa-brands fa-telegram text-xl"></i>
+          </a>
+
+          <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ share_url|urlencode }}"
+             target="_blank" rel="noopener noreferrer"
+             class="btn btn-ghost btn-sm text-blue-700 hover:bg-blue-50" aria-label="Share on LinkedIn">
+            <i class="fa-brands fa-linkedin text-xl"></i>
+          </a>
+
+          <a href="https://www.facebook.com/sharer/sharer.php?u={{ share_url|urlencode }}"
+             target="_blank" rel="noopener noreferrer"
+             class="btn btn-ghost btn-sm text-blue-600 hover:bg-blue-50" aria-label="Share on Facebook">
+            <i class="fa-brands fa-facebook text-xl"></i>
+          </a>
+        </div>
+      </div>
+    {% endwith %}
+  {% endif %}
+{% endwith %}
+
+
+<!-- Nex And Previous Buttons -->
+<div class="flex flex-col sm:flex-row justify-between items-stretch mt-12 mb-8 gap-4">
+  {% if prev_post %}
+    <div class="flex flex-col items-start w-full sm:w-1/3 max-w-xs">
+      <a href="{% url 'blog_detail' prev_post.slug %}" class="btn btn-outline btn-sm mb-1 w-full text-left">
+        &larr; {% trans "Previous" %}
+      </a>
+      <span class="text-xs text-gray-500 break-words truncate max-w-full">
+        {{ prev_post.title }}
+      </span>
+    </div>
+  {% else %}
+    <span class="w-full sm:w-1/3"></span>
+  {% endif %}
+  {% if next_post %}
+    <div class="flex flex-col items-end w-full sm:w-1/3 max-w-xs ml-auto">
+      <a href="{% url 'blog_detail' next_post.slug %}" class="btn btn-outline btn-sm mb-1 w-full text-right">
+        {% trans "Next" %} &rarr;
+      </a>
+      <span class="text-xs text-gray-500 break-words truncate max-w-full text-right">
+        {{ next_post.title }}
+      </span>
+    </div>
+  {% endif %}
+</div>
+
+
+    <!-- Comments -->
+    <section class="mt-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">{% trans "Comments" %}</h2>
+
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'comment_post' post.slug %}" class="mb-6">
+            {% csrf_token %}
+            <textarea name="content" rows="3"
+                      class="w-full border border-gray-300 bg-white text-gray-900 rounded-md p-2 mb-2
+                             placeholder:text-gray-400
+                             focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-500"
+                      placeholder="{% trans 'Add a comment...' %}"></textarea>
+            <button type="submit" class="btn btn-primary text-white">
+                {% trans "Post Comment" %}
+            </button>
+        </form>
+        {% else %}
+        <div class="mb-6 text-gray-600 text-sm">{% trans "Login to comment." %}</div>
+        {% endif %}
+
+        <div class="space-y-4">
+            {% for comment in post.comments.all %}
+            <div class="bg-gray-50 rounded p-3">
+                <div class="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                    <i class="fa-solid fa-user"></i>
+                    {% if comment.user and comment.user.profile %}
+                        {% if comment.user.profile.first_name or comment.user.profile.last_name %}
+                            <span class="font-semibold">
+                            {{ comment.user.profile.first_name }} {{ comment.user.profile.last_name }}
+                            </span>
+                        {% else %}
+                            <span class="font-semibold">
+                            User #{{ comment.user.id }}
+                            </span>
+                        {% endif %}
+                        {% else %}
+                        <span class="font-semibold text-gray-500">{% trans "Deleted user" %}</span>
+                    {% endif %}
+                    <span class="text-gray-500">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                </div>
+                <div class="text-gray-900">{{ comment.content|linebreaks }}</div>
+            </div>
+            {% empty %}
+            <div class="text-gray-400">{% trans "No comments yet." %}</div>
+            {% endfor %}
+        </div>
+    </section>
+</article>
+
+{% endblock %}

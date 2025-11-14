@@ -1,0 +1,130 @@
+<!-- Food Feeling Selection Section -->
+<div class="mb-6">
+  <div class="mb-6 text-lg font-medium text-center opacity-90">
+    {% if form.pet_name %}
+      How does {{ form.pet_name }} feel about food?
+    {% else %}
+      {{ form.food_feeling.label }}
+    {% endif %}
+  </div>
+  
+  <!-- Food Feeling Options -->
+  <div class="grid grid-cols-1 gap-4 max-w-2xl mx-auto">
+    {% for choice in form.food_feeling %}
+      <label class="btn btn-outline btn-lg cursor-pointer food-feeling-btn hover:btn-primary transition-all duration-200 p-6 h-auto text-left">
+        {{ choice.tag }}
+        <div class="ml-4 flex-1">
+          <div class="text-xl font-bold mb-2">{{ choice.choice_label }}</div>
+          <div class="text-sm opacity-75 font-normal">
+            {% for feeling in form.food_feelings_with_descriptions %}
+              {% if feeling.name == choice.choice_label %}
+                {{ feeling.description }}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </label>
+    {% endfor %}
+  </div>
+  
+  <!-- Error Display -->
+  {% for error in form.food_feeling.errors %}
+    <div class="text-error text-sm mt-4 text-center">{{ error }}</div>
+  {% endfor %}
+  
+  <!-- Form-level errors -->
+  {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+      <div class="text-error text-sm mt-2 text-center">{{ error }}</div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- Store pet name for JavaScript -->
+<script>
+  window.petNameStep6 = '{{ form.pet_name|default:"" }}';
+  
+  // Step 6: Food feeling selection handling
+  document.addEventListener('DOMContentLoaded', function() {
+      const foodFeelingButtons = document.querySelectorAll('.food-feeling-btn');
+      
+      function updateButtonStates() {
+          foodFeelingButtons.forEach(function(button) {
+              const radio = button.querySelector('input[type="radio"]');
+              if (radio && radio.checked) {
+                  button.classList.add('btn-primary');
+                  button.classList.remove('btn-outline');
+              } else {
+                  button.classList.remove('btn-primary');
+                  button.classList.add('btn-outline');
+              }
+          });
+      }
+      
+      // Add click handlers to buttons
+      foodFeelingButtons.forEach(function(button) {
+          button.addEventListener('click', function() {
+              const radio = this.querySelector('input[type="radio"]');
+              if (radio) {
+                  // Uncheck all other radios first
+                  document.querySelectorAll('input[name="step6-food_feeling"]').forEach(function(r) {
+                      r.checked = false;
+                  });
+                  // Check this radio
+                  radio.checked = true;
+                  updateButtonStates();
+              }
+          });
+      });
+      
+      // Set initial button states
+      updateButtonStates();
+      
+      // Listen for direct radio changes (in case user clicks radio directly)
+      document.querySelectorAll('input[name="step6-food_feeling"]').forEach(function(radio) {
+          radio.addEventListener('change', updateButtonStates);
+      });
+  });
+</script>
+
+<style>
+  /* Hide the actual radio buttons but keep them functional */
+  .food-feeling-btn input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+  }
+  
+  /* Ensure button content is properly styled */
+  .food-feeling-btn {
+      min-height: 5rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+  }
+  
+  /* Hover effects */
+  .food-feeling-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Active state styling */
+  .food-feeling-btn.btn-primary {
+      color: white;
+  }
+  
+  .food-feeling-btn.btn-primary .opacity-75 {
+      opacity: 0.9;
+  }
+  
+  /* Text styling */
+  .food-feeling-btn .text-xl {
+      line-height: 1.2;
+  }
+  
+  .food-feeling-btn .text-sm {
+      line-height: 1.4;
+  }
+</style>

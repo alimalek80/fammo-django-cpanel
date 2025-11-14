@@ -1,0 +1,569 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Clinic Dashboard" %} - FAMMO{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Fallback CSS - Only applies if Tailwind CSS fails to load */
+    
+    /* Container utilities */
+    .container { width: 100%; }
+    @media (min-width: 640px) { .container { max-width: 640px; } }
+    @media (min-width: 768px) { .container { max-width: 768px; } }
+    @media (min-width: 1024px) { .container { max-width: 1024px; } }
+    @media (min-width: 1280px) { .container { max-width: 1280px; } }
+    @media (min-width: 1536px) { .container { max-width: 1536px; } }
+    
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .max-w-7xl { max-width: 80rem; }
+    
+    /* Spacing */
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+    .p-3 { padding: 0.75rem; }
+    .p-4 { padding: 1rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-0 { padding: 0; }
+    
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .mt-4 { margin-top: 1rem; }
+    .ml-3 { margin-left: 0.75rem; }
+    .ml-4 { margin-left: 1rem; }
+    .mr-1 { margin-right: 0.25rem; }
+    .mr-3 { margin-right: 0.75rem; }
+    .-mb-px { margin-bottom: -1px; }
+    
+    /* Flexbox */
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .justify-between { justify-content: space-between; }
+    .flex-shrink-0 { flex-shrink: 0; }
+    .flex-1 { flex: 1 1 0%; }
+    .space-x-3 > :not([hidden]) ~ :not([hidden]) { margin-left: 0.75rem; }
+    .space-x-4 > :not([hidden]) ~ :not([hidden]) { margin-left: 1rem; }
+    .space-x-8 > :not([hidden]) ~ :not([hidden]) { margin-left: 2rem; }
+    .space-y-1 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.25rem; }
+    .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem; }
+    
+    /* Grid */
+    .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    @media (min-width: 768px) {
+        .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+        .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .lg\:col-span-2 { grid-column: span 2 / span 2; }
+    }
+    .gap-4 { gap: 1rem; }
+    .gap-6 { gap: 1.5rem; }
+    .gap-8 { gap: 2rem; }
+    
+    /* Typography */
+    .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+    .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-xs { font-size: 0.75rem; line-height: 1rem; }
+    .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    
+    .uppercase { text-transform: uppercase; }
+    .tracking-wider { letter-spacing: 0.05em; }
+    
+    .text-left { text-align: left; }
+    .text-center { text-align: center; }
+    
+    /* Colors */
+    .text-gray-900 { color: #111827; }
+    .text-gray-800 { color: #1F2937; }
+    .text-gray-700 { color: #374151; }
+    .text-gray-600 { color: #4B5563; }
+    .text-gray-500 { color: #6B7280; }
+    .text-gray-400 { color: #9CA3AF; }
+    
+    .text-blue-600 { color: #2563EB; }
+    .text-blue-700 { color: #1D4ED8; }
+    .text-blue-800 { color: #1E40AF; }
+    
+    .text-green-500 { color: #22C55E; }
+    .text-green-600 { color: #16A34A; }
+    .text-green-800 { color: #166534; }
+    
+    .text-yellow-600 { color: #CA8A04; }
+    .text-yellow-800 { color: #854D0E; }
+    
+    .text-orange-500 { color: #F97316; }
+    .text-orange-600 { color: #EA580C; }
+    .text-orange-800 { color: #9A3412; }
+    
+    .text-red-500 { color: #EF4444; }
+    .text-red-600 { color: #DC2626; }
+    .text-red-800 { color: #991B1B; }
+    
+    .text-white { color: #FFFFFF; }
+    
+    .bg-white { background-color: #FFFFFF; }
+    .bg-gray-50 { background-color: #F9FAFB; }
+    .bg-gray-100 { background-color: #F3F4F6; }
+    
+    .bg-yellow-50 { background-color: #FEFCE8; }
+    .bg-yellow-100 { background-color: #FEF3C7; }
+    
+    .bg-green-100 { background-color: #D1FAE5; }
+    .bg-green-800 { background-color: #166534; }
+    
+    .bg-blue-50 { background-color: #EFF6FF; }
+    .bg-blue-100 { background-color: #DBEAFE; }
+    .bg-blue-600 { background-color: #2563EB; }
+    .bg-blue-700 { background-color: #1D4ED8; }
+    
+    .bg-purple-100 { background-color: #F3E8FF; }
+    
+    /* Borders */
+    .border { border-width: 1px; }
+    .border-b { border-bottom-width: 1px; }
+    .border-b-2 { border-bottom-width: 2px; }
+    
+    .border-gray-200 { border-color: #E5E7EB; }
+    .border-gray-300 { border-color: #D1D5DB; }
+    .border-yellow-200 { border-color: #FDE68A; }
+    .border-blue-500 { border-color: #3B82F6; }
+    .border-transparent { border-color: transparent; }
+    
+    .divide-y > :not([hidden]) ~ :not([hidden]) { border-top-width: 1px; }
+    .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: #E5E7EB; }
+    
+    /* Border radius */
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-md { border-radius: 0.375rem; }
+    .rounded-full { border-radius: 9999px; }
+    
+    /* Shadows */
+    .shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+    
+    /* Display */
+    .block { display: block; }
+    .inline-flex { display: inline-flex; }
+    .hidden { display: none; }
+    
+    /* Width & Height */
+    .w-4 { width: 1rem; }
+    .w-8 { width: 2rem; }
+    .w-12 { width: 3rem; }
+    .h-4 { height: 1rem; }
+    .h-8 { height: 2rem; }
+    .h-12 { height: 3rem; }
+    .w-full { width: 100%; }
+    .min-w-full { min-width: 100%; }
+    
+    /* Overflow */
+    .overflow-hidden { overflow: hidden; }
+    
+    /* Table */
+    .divide-y > :not([hidden]) ~ :not([hidden]) {
+        border-top-width: 1px;
+        border-color: #E5E7EB;
+    }
+    
+    /* Whitespace */
+    .whitespace-nowrap { white-space: nowrap; }
+    
+    /* Hover effects */
+    .hover\:bg-gray-50:hover { background-color: #F9FAFB; }
+    .hover\:bg-blue-700:hover { background-color: #1D4ED8; }
+    .hover\:text-gray-700:hover { color: #374151; }
+    .hover\:text-blue-800:hover { color: #1E40AF; }
+    .hover\:border-gray-300:hover { border-color: #D1D5DB; }
+    
+    /* SVG */
+    svg { display: block; vertical-align: middle; }
+    
+    /* Additional specific styles */
+    .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{% trans "Clinic Dashboard" %}</h1>
+                <p class="text-gray-600 mt-1">{{ clinic.name }}</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{{ clinic.get_absolute_url }}" 
+                   class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
+                    {% trans "View Public Profile" %}
+                </a>
+                <a href="{% url 'vets:clinic_profile_update' %}" 
+                   class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    {% trans "Edit Profile" %}
+                </a>
+            </div>
+        </div>
+
+        <!-- Verification Status -->
+        {% if not verification_status.is_public %}
+        <div class="mb-8">
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <h3 class="text-lg font-medium text-yellow-800 mb-3">
+                            {% trans "Clinic Verification Status" %}
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Email Confirmation -->
+                            <div class="flex items-center p-3 bg-white rounded-lg border">
+                                {% if verification_status.email_confirmed %}
+                                    <i class="fas fa-check-circle text-green-500 text-lg mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-green-800">{% trans "Email Confirmed" %}</p>
+                                        <p class="text-sm text-green-600">{% trans "Your email is verified" %}</p>
+                                    </div>
+                                {% else %}
+                                    <i class="fas fa-clock text-orange-500 text-lg mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-orange-800">{% trans "Email Pending" %}</p>
+                                        <p class="text-sm text-orange-600">{% trans "Check your email for confirmation link" %}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Admin Approval -->
+                            <div class="flex items-center p-3 bg-white rounded-lg border">
+                                {% if verification_status.admin_approved %}
+                                    <i class="fas fa-check-circle text-green-500 text-lg mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-green-800">{% trans "Admin Approved" %}</p>
+                                        <p class="text-sm text-green-600">{% trans "Your clinic is approved" %}</p>
+                                    </div>
+                                {% else %}
+                                    <i class="fas fa-clock text-orange-500 text-lg mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-orange-800">{% trans "Admin Review" %}</p>
+                                        <p class="text-sm text-orange-600">{% trans "Waiting for admin approval" %}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Public Listing -->
+                            <div class="flex items-center p-3 bg-white rounded-lg border">
+                                {% if verification_status.is_public %}
+                                    <i class="fas fa-globe text-green-500 text-lg mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-green-800">{% trans "Public Listing" %}</p>
+                                        <p class="text-sm text-green-600">{% trans "Visible to users" %}</p>
+                                    </div>
+                                {% else %}
+                                    <i class="fas fa-eye-slash text-red-500 text-lg mr-3"></i>
+                                    <div>
+                                        <p class="font-medium text-red-800">{% trans "Hidden" %}</p>
+                                        <p class="text-sm text-red-600">{% trans "Not publicly visible yet" %}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-medium text-blue-800 mb-2">{% trans "Next Steps:" %}</h4>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                {% if not verification_status.email_confirmed %}
+                                    <li>• {% trans "Check your email and click the confirmation link" %}</li>
+                                {% endif %}
+                                {% if not verification_status.admin_approved %}
+                                    <li>• {% trans "Wait for admin review (typically 1-3 business days)" %}</li>
+                                {% endif %}
+                                {% if verification_status.email_confirmed and verification_status.admin_approved %}
+                                    <li>• {% trans "Your clinic should be publicly visible soon!" %}</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">{% trans "Total Referrals" %}</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ total_referrals }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">{% trans "Active Users" %}</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ active_referrals }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">{% trans "New Referrals" %}</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{ new_referrals }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                            {% if clinic.admin_approved %}
+                            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            {% elif clinic.email_confirmed %}
+                            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            {% else %}
+                            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">{% trans "Status" %}</p>
+                        <p class="text-sm font-semibold {% if clinic.admin_approved %}text-green-600{% elif clinic.email_confirmed %}text-blue-600{% else %}text-yellow-600{% endif %}">
+                            {% if clinic.admin_approved %}
+                                {% trans "Verified Partner" %}
+                            {% elif clinic.email_confirmed %}
+                                {% trans "Listed (Pending Verification)" %}
+                            {% else %}
+                                {% trans "Email Confirmation Pending" %}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8 px-6">
+                    <a href="{% url 'vets:clinic_dashboard' %}" 
+                       class="border-b-2 border-blue-500 py-4 px-1 text-sm font-medium text-blue-600">
+                        {% trans "Overview" %}
+                    </a>
+                    <a href="{% url 'vets:clinic_referrals' %}" 
+                       class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        {% trans "Referrals" %}
+                    </a>
+                    <a href="{% url 'vets:clinic_analytics' %}" 
+                       class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        {% trans "Analytics" %}
+                    </a>
+                    <a href="{% url 'vets:clinic_profile_update' %}" 
+                       class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        {% trans "Profile" %}
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Recent Referrals -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">{% trans "Recent Referrals" %}</h3>
+                    </div>
+                    <div class="p-0">
+                        {% if recent_referrals %}
+                        <div class="overflow-hidden">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {% trans "User" %}
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {% trans "Status" %}
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {% trans "Date" %}
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {% trans "Code" %}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for referral in recent_referrals %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {% if referral.user %}
+                                                    {{ referral.user.email }}
+                                                {% else %}
+                                                    {{ referral.email_capture|default:"Anonymous" }}
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                {% if referral.status == 'ACTIVE' %}bg-green-100 text-green-800
+                                                {% elif referral.status == 'NEW' %}bg-yellow-100 text-yellow-800
+                                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                                {{ referral.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ referral.created_at|date:"M d, Y" }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {% if referral.referral_code %}
+                                                {{ referral.referral_code.code }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="p-6 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">{% trans "No referrals yet" %}</h3>
+                            <p class="mt-1 text-sm text-gray-500">{% trans "Share your referral links to start getting new patients." %}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Referral Codes -->
+            <div>
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">{% trans "Referral Codes" %}</h3>
+                    </div>
+                    <div class="p-6">
+                        {% if referral_codes %}
+                        <div class="space-y-3">
+                            {% for code in referral_codes %}
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <code class="text-sm font-mono text-gray-900">{{ code.code }}</code>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        {% trans "Created" %} {{ code.created_at|date:"M d" }}
+                                    </p>
+                                </div>
+                                <button onclick="copyCode('{{ code.code }}')" 
+                                        class="text-blue-600 hover:text-blue-800 text-xs"
+                                        style="background: none; border: none; cursor: pointer; padding: 0.25rem 0.5rem; transition: all 0.2s ease;">
+                                    {% trans "Copy" %}
+                                </button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-sm text-gray-500">{% trans "No referral codes available." %}</p>
+                        {% endif %}
+                        
+                        <div class="mt-4">
+                            <a href="{% url 'vets:clinic_referrals' %}" 
+                               class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                {% trans "Manage Referrals" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyCode(code) {
+    const url = `${window.location.origin}/vets/ref/${code}/`;
+    navigator.clipboard.writeText(url).then(function() {
+        // Get the button that was clicked
+        const button = event.target;
+        const originalText = button.innerHTML;
+        const originalColor = button.style.color;
+        
+        // Add push effect
+        button.style.transform = 'scale(0.95)';
+        
+        // Change to "Copied!" with green color and checkmark
+        button.innerHTML = '<i class="fas fa-check mr-1"></i>{% trans "Copied!" %}';
+        button.style.color = '#10b981';
+        button.style.fontWeight = '600';
+        
+        // Reset transform after push effect
+        setTimeout(function() {
+            button.style.transform = 'scale(1)';
+        }, 100);
+        
+        // Revert back to original after 2 seconds
+        setTimeout(function() {
+            button.innerHTML = originalText;
+            button.style.color = originalColor || '#2563eb';
+            button.style.fontWeight = '500';
+        }, 2000);
+    }, function(err) {
+        console.error('Could not copy text: ', err);
+        alert('{% trans "Could not copy link. Please try again." %}');
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,138 @@
+<!-- 
+  EXAMPLE: How to add location detection to clinic_register.html
+  This shows how to auto-fill coordinates when clinic enters their address
+-->
+
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block extra_js %}
+<!-- Include location service -->
+<script src="{% static 'js/location.js' %}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addressField = document.getElementById('id_address');
+    const cityField = document.getElementById('id_city');
+    const latField = document.getElementById('id_latitude');
+    const lngField = document.getElementById('id_longitude');
+    
+    // Create a button to auto-detect clinic location
+    const locationContainer = document.createElement('div');
+    locationContainer.className = 'mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200';
+    locationContainer.innerHTML = `
+        <h4 class="font-semibold text-blue-900 mb-2">📍 Auto-Detect Your Clinic Location</h4>
+        <p class="text-sm text-blue-700 mb-3">
+            Click to automatically fill in your clinic's coordinates based on your current location.
+        </p>
+        <div id="clinic-location-button"></div>
+        <p class="text-xs text-blue-600 mt-2">
+            Or enter coordinates manually below if you know them.
+        </p>
+    `;
+    
+    // Insert after address fields
+    const addressSection = addressField.closest('.grid').parentElement;
+    addressSection.appendChild(locationContainer);
+    
+    // Add location button
+    showLocationButton('clinic-location-button', {
+        className: 'bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700',
+        text: '📍 Use Current Location',
+        successClassName: 'bg-green-600 text-white px-6 py-3 rounded-lg',
+        errorClassName: 'bg-red-600 text-white px-6 py-3 rounded-lg',
+        onSuccess: function(location) {
+            // Fill in the coordinates
+            if (latField) latField.value = location.latitude.toFixed(6);
+            if (lngField) lngField.value = location.longitude.toFixed(6);
+            
+            // Show success message
+            const successMsg = document.createElement('div');
+            successMsg.className = 'mt-3 p-3 bg-green-50 border border-green-200 rounded text-green-800 text-sm';
+            successMsg.innerHTML = `
+                ✓ Location detected successfully!<br>
+                <strong>Coordinates:</strong> ${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}<br>
+                <em>These coordinates will help pet owners find your clinic.</em>
+            `;
+            locationContainer.appendChild(successMsg);
+        },
+        onError: function(error) {
+            // Show error message
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'mt-3 p-3 bg-red-50 border border-red-200 rounded text-red-800 text-sm';
+            errorMsg.innerHTML = `
+                ⚠️ ${error.message}<br>
+                <em>You can enter coordinates manually or leave them blank.</em>
+            `;
+            locationContainer.appendChild(errorMsg);
+        }
+    });
+});
+</script>
+{% endblock %}
+
+<!-- 
+  ALTERNATIVE: Geocode from address
+  This example shows how to geocode the entered address
+-->
+
+<script>
+// Add a "Geocode Address" button
+function addGeocodeButton() {
+    const addressField = document.getElementById('id_address');
+    const cityField = document.getElementById('id_city');
+    const latField = document.getElementById('id_latitude');
+    const lngField = document.getElementById('id_longitude');
+    
+    const geocodeBtn = document.createElement('button');
+    geocodeBtn.type = 'button';
+    geocodeBtn.className = 'mt-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700';
+    geocodeBtn.textContent = '🗺️ Get Coordinates from Address';
+    
+    geocodeBtn.addEventListener('click', async function() {
+        const address = addressField.value.trim();
+        const city = cityField.value.trim();
+        
+        if (!address || !city) {
+            alert('Please enter both address and city first');
+            return;
+        }
+        
+        geocodeBtn.disabled = true;
+        geocodeBtn.textContent = '⏳ Geocoding...';
+        
+        try {
+            // Call your backend geocoding API
+            const response = await fetch('/vets/api/geocode/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ address, city })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                latField.value = data.latitude.toFixed(6);
+                lngField.value = data.longitude.toFixed(6);
+                geocodeBtn.textContent = '✓ Coordinates Found!';
+                geocodeBtn.className = 'mt-2 bg-green-600 text-white px-4 py-2 rounded';
+            } else {
+                throw new Error(data.message || 'Geocoding failed');
+            }
+        } catch (error) {
+            alert('Could not geocode address: ' + error.message);
+            geocodeBtn.textContent = '🗺️ Get Coordinates from Address';
+            geocodeBtn.disabled = false;
+        }
+    });
+    
+    addressField.parentElement.appendChild(geocodeBtn);
+}
+
+// Call when page loads
+document.addEventListener('DOMContentLoaded', addGeocodeButton);
+</script>

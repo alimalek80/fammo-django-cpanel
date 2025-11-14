@@ -1,0 +1,470 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl shadow-xl mt-10 space-y-8">
+    <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-gray-100 text-center mb-6">
+        {% if is_edit %}{{ _("Edit") }}{% else %}{{ _("Add") }}{% endif %} {{ _("Pet Profile") }}
+    </h2>
+
+    <form method="post" class="space-y-10">
+        {% csrf_token %}
+
+        <!-- Basic Info Section -->
+        <div>
+            <div class="flex items-center my-8">
+                <div class="flex-grow border-t border-gray-300"></div>
+                <span class="mx-4 text-green-400 font-bold uppercase text-xs">{{ _("Basic Info") }}</span>
+                <div class="flex-grow border-t border-gray-300"></div>
+            </div>
+            
+            <!-- Name -->
+             <div>
+                {% for field in form.visible_fields %}
+                    {% if field.name == "name" %}
+                    <div class="mb-4">
+                        <label class="block text-lg font-bold text-center text-gray-700 mb-4">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="text-xs text-gray-500">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p class="text-sm text-red-500">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Pet Type: Custom Two-Button Selector -->
+             
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.pet_type.label }}</label>
+                <div class="flex justify-center gap-6">
+                    {% for radio in form.pet_type %}
+                        {% if radio.choice_label %}
+                        <label for="{{ radio.id_for_label }}"
+                            class="selectable-option w-28 bg-white border-2 rounded-xl p-3 cursor-pointer text-center transition duration-200
+                            {% if radio.choice_value == form.pet_type.value %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                            {% if radio.choice_label == "Dog" %}
+                                <i class="fa-solid fa-dog text-2xl text-indigo-600 mb-2"></i>
+                            {% elif radio.choice_label == "Cat" %}
+                                <i class="fa-solid fa-cat text-2xl text-pink-500 mb-2"></i>
+                            {% endif %}
+                            <div class="text-base font-medium text-gray-700 mt-2">{{ radio.choice_label }}</div>
+                            {{ radio.tag }}
+                        </label>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% if form.pet_type.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.pet_type.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+            
+
+            <!-- Gender -->
+             <div>
+             <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.gender.label }}</label>
+                <div class="flex justify-center gap-6">
+                    {% for radio in form.gender %}
+                        <label for="{{ radio.id_for_label }}"
+                            class="selectable-option w-28 bg-white border-2 rounded-xl p-3 cursor-pointer text-center transition duration-200
+                            {% if radio.choice_value == form.gender.value %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                            
+                            {% if radio.choice_label == "Boy" %}
+                                <i class="fa-solid fa-mars text-2xl text-blue-500 mb-2"></i>
+                            {% elif radio.choice_label == "Girl" %}
+                                <i class="fa-solid fa-venus text-2xl text-pink-500 mb-2"></i>
+                            {% endif %}
+                            
+                            <div class="text-base font-medium text-gray-700 mt-2">{{ radio.choice_label }}</div>
+                            {{ radio.tag }}
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.gender.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.gender.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+            </div>
+
+
+            <!-- Neutered -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.neutered.label }}</label>
+                <div class="flex justify-center gap-6">
+                    {% for radio in form.neutered %}
+                        <label for="{{ radio.id_for_label }}"
+                            class="selectable-option w-28 bg-white border-2 rounded-xl p-3 cursor-pointer text-center transition duration-200
+                            {% if radio.choice_value == form.neutered.value %} border-gray-100 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                            
+                            {% if radio.choice_label == "True" or radio.choice_label == "Yes" %}
+                                <i class="fa-solid fa-check text-2xl text-green-600 mb-2"></i>
+                            {% elif radio.choice_label == "False" or radio.choice_label == "No" %}
+                                <i class="fa-solid fa-xmark text-2xl text-red-600 mb-2"></i>
+                            {% endif %}
+                            
+                            <div class="text-base font-medium text-gray-700 mt-2">
+                                {% if radio.choice_label == "True" or radio.choice_label == "Yes" %}
+                                    Yes
+                                {% elif radio.choice_label == "False" or radio.choice_label == "No" %}
+                                    No
+                                {% else %}
+                                    {{ radio.choice_label }}
+                                {% endif %}
+                            </div>
+                            {{ radio.tag }}
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.neutered.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.neutered.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+            
+
+            <!-- Age Category: Two Columns for Cat and Dog -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.age_category.label }}</label>
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Cat Age Categories -->
+                    <div>
+                        <div class="flex items-center mb-2">
+                            <i class="fa-solid fa-cat text-xl text-pink-500 mr-2"></i>
+                            <span class="font-semibold text-gray-700">Cat</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            {% for age in cat_ages %}
+                                <label class="selectable-option min-w-[6rem] bg-white border-2 rounded-xl px-4 py-2 cursor-pointer text-center transition duration-200
+                                    {% if form.age_category.value|stringformat:"s" == age.id|stringformat:"s" %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                                    <input type="radio" name="age_category" value="{{ age.id }}"
+                                        {% if form.age_category.value|stringformat:"s" == age.id|stringformat:"s" %}checked{% endif %}>
+                                    <div class="text-sm font-medium text-gray-700">{{ age.name }}</div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!-- Dog Age Categories -->
+                    <div>
+                        <div class="flex items-center mb-2">
+                            <i class="fa-solid fa-dog text-xl text-indigo-600 mr-2"></i>
+                            <span class="font-semibold text-gray-700">Dog</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            {% for age in dog_ages %}
+                                <label class="selectable-option min-w-[6rem] bg-white border-2 rounded-xl px-4 py-2 cursor-pointer text-center transition duration-200
+                                    {% if form.age_category.value|stringformat:"s" == age.id|stringformat:"s" %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                                    <input type="radio" name="age_category" value="{{ age.id }}"
+                                        {% if form.age_category.value|stringformat:"s" == age.id|stringformat:"s" %}checked{% endif %}>
+                                    <div class="text-sm font-medium text-gray-700">{{ age.name }}</div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% if form.age_category.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.age_category.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+            
+
+            <!-- Age Breakdown in One Row -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">Age</label>
+                <div class="grid grid-cols-3 gap-4">
+                    <!-- Age in Years -->
+                    <div>
+                        <label for="id_age_years" class="block text-xs font-semibold text-gray-500 mb-1">Years</label>
+                        {{ form.age_years }}
+                        {% for error in form.age_years.errors %}
+                            <p class="text-sm text-red-500">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Age in Months -->
+                    <div>
+                        <label for="id_age_months" class="block text-xs font-semibold text-gray-500 mb-1">Months</label>
+                        {{ form.age_months }}
+                        {% for error in form.age_months.errors %}
+                            <p class="text-sm text-red-500">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Age in Weeks -->
+                    <div>
+                        <label for="id_age_weeks" class="block text-xs font-semibold text-gray-500 mb-1">Weeks</label>
+                        {{ form.age_weeks }}
+                        {% for error in form.age_weeks.errors %}
+                            <p class="text-sm text-red-500">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+
+            <!-- Breed Dropdown -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-1" for="id_breed">{{ form.breed.label }}</label>
+                {{ form.breed }}
+                {% if form.breed.help_text %}
+                    <p class="text-xs text-gray-500">{{ form.breed.help_text }}</p>
+                {% endif %}
+                {% for error in form.breed.errors %}
+                    <p class="text-sm text-red-500">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Health Section -->
+        <div>
+            <div class="flex items-center my-8">
+                <div class="flex-grow border-t border-gray-300"></div>
+                <span class="mx-4 text-gray-400 font-semibold uppercase text-xs">{{ _("Health") }}</span>
+                <div class="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            <!-- Body Type -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.body_type.label }}</label>
+                <div class="flex justify-center gap-6">
+                    {% for radio in form.body_type %}
+                        <label for="{{ radio.id_for_label }}"
+                            class="selectable-option w-28 bg-white border-2 rounded-xl p-3 cursor-pointer text-center transition duration-200
+                            {% if radio.choice_value == form.body_type.value %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+
+                            {% if radio.choice_label == "A little skinny" %}
+                                <i class="fa-solid fa-weight-hanging text-sm text-green-600 mb-2"></i>
+                            {% elif radio.choice_label == "Just right" %}
+                                <i class="fa-solid fa-weight-hanging text-2xl text-yellow-600 mb-2"></i>
+                            {% elif radio.choice_label == "A bit chubby" %}
+                                <i class="fa-solid fa-weight-hanging text-3xl text-red-600 mb-2"></i>
+                            {% endif %}
+                            
+                            <div class="text-base font-medium text-gray-700 mt-2">{{ radio.choice_label }}</div>
+                            {{ radio.tag }}
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.body_type.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.body_type.errors|join:", " }}</p>
+                {% endif %}
+
+            <!-- Weight Field -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-1">{{ form.weight.label }}</label>
+                {{ form.weight }}
+                {% if form.weight.help_text %}
+                    <p class="text-xs text-gray-500">{{ form.weight.help_text }}</p>
+                {% endif %}
+                {% for error in form.weight.errors %}
+                    <p class="text-sm text-red-500">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <!-- Food Allergies as Multi-Select Buttons -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.food_allergies.label }}</label>
+                <div class="flex flex-wrap gap-4">
+                    {% for checkbox in form.food_allergies %}
+                    <label for="{{ checkbox.id_for_label }}"
+                        class="selectable-option min-w-[6rem] bg-white border-2 rounded-xl px-4 py-2 cursor-pointer text-center transition duration-200
+                        {% if checkbox.tag.attrs.checked %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                        {{ checkbox.tag }}
+                        <div class="text-sm font-medium text-gray-700">{{ checkbox.choice_label }}</div>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% if form.food_allergies.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.food_allergies.errors|join:", " }}</p>
+                {% endif %}
+
+                <!-- Other Food Allergy Field -->
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">{{ form.food_allergy_other.label }}</label>
+                    {{ form.food_allergy_other }}
+                    {% if form.food_allergy_other.help_text %}
+                        <p class="text-xs text-gray-500">{{ form.food_allergy_other.help_text }}</p>
+                    {% endif %}
+                    {% for error in form.food_allergy_other.errors %}
+                        <p class="text-sm text-red-500">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Activity Level -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.activity_level.label }}</label>
+                <div class="flex flex-wrap justify-center gap-4">
+                    {% for radio in form.activity_level %}
+                        <label for="{{ radio.id_for_label }}"
+                            class="selectable-option w-32 bg-white border-2 rounded-xl p-3 cursor-pointer text-center transition duration-200
+                            {% if radio.choice_value == form.activity_level.value %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                            <div class="text-base font-medium text-gray-700 mt-2">{{ radio.choice_label }}</div>
+                            {{ radio.tag }}
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.activity_level.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.activity_level.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Health Issues -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.health_issues.label }}</label>
+                <div class="flex flex-wrap gap-4">
+                    {% for checkbox in form.health_issues %}
+                        <label for="{{ checkbox.id_for_label }}"
+                            class="selectable-option min-w-[6rem] bg-white border-2 rounded-xl px-4 py-2 cursor-pointer text-center transition duration-200
+                            {% if checkbox.choice_label == 'No health issues' %}
+                                {% if checkbox.tag.attrs.checked %}border-green-500 bg-green-50{% else %}border-gray-300 hover:border-green-400{% endif %}
+                            {% else %}
+                                {% if checkbox.tag.attrs.checked %}border-blue-600 bg-blue-50{% else %}border-gray-300 hover:border-blue-400{% endif %}
+                            {% endif %}">
+                            
+                            {% if checkbox.choice_label == 'No health issues' %}
+                                <i class="fa-solid fa-shield-heart text-xl text-green-500 mb-2"></i>
+                            {% endif %}
+
+                            {{ checkbox.tag }}
+                            <div class="text-sm font-medium text-gray-700">{{ checkbox.choice_label }}</div>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.health_issues.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.health_issues.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+        
+
+        <!-- Food Section -->
+        <div>
+            <div class="flex items-center my-8">
+                <div class="flex-grow border-t border-gray-300"></div>
+                <span class="mx-4 text-gray-400 font-semibold uppercase text-xs">{{ _("Food & Treats") }}</span>
+                <div class="flex-grow border-t border-gray-300"></div>
+            </div>
+
+            <!-- Food Types as Buttons -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.food_types.label }}</label>
+                <div class="flex flex-wrap justify-center gap-4">
+                    {% for radio in form.food_types %}
+                        <label for="{{ radio.id_for_label }}"
+                            class="selectable-option min-w-[7rem] bg-white border-2 rounded-xl px-4 py-3 cursor-pointer text-center transition duration-200
+                            {% if radio.data.checked %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                            
+                            {% if 'Dry' in radio.choice_label %}<i class="fa-solid fa-bowl-food text-xl text-yellow-600 mb-2"></i>
+                            {% elif 'Wet' in radio.choice_label %}<i class="fa-solid fa-utensil-spoon text-xl text-blue-500 mb-2"></i>
+                            {% elif 'Raw' in radio.choice_label %}<i class="fa-solid fa-drumstick-bite text-xl text-red-600 mb-2"></i>
+                            {% elif 'Home' in radio.choice_label %}<i class="fa-solid fa-kitchen-set text-xl text-green-600 mb-2"></i>
+                            {% endif %}
+
+                            {{ radio.tag }}
+                            <div class="text-sm font-medium text-gray-700">{{ radio.choice_label }}</div>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.food_types.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.food_types.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Food Feeling as Buttons -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.food_feeling.label }}</label>
+                <div class="flex flex-wrap justify-center gap-4">
+                    {% for radio in form.food_feeling %}
+                        <label for="{{ radio.id_for_label }}"
+                            class="selectable-option min-w-[7rem] bg-white border-2 rounded-xl px-4 py-3 cursor-pointer text-center transition duration-200
+                            {% if radio.data.checked %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                            
+                            {% if 'foodie' in radio.choice_label|lower %}<i class="fa-solid fa-face-grin-stars text-xl text-yellow-500 mb-2"></i>
+                            {% elif 'good eater' in radio.choice_label|lower %}<i class="fa-solid fa-face-smile-beam text-xl text-green-500 mb-2"></i>
+                            {% elif 'can be fussy' in radio.choice_label|lower %}<i class="fa-solid fa-face-meh text-xl text-orange-500 mb-2"></i>
+                            {% elif 'very fussy' in radio.choice_label|lower %}<i class="fa-solid fa-face-frown text-xl text-red-500 mb-2"></i>
+                            {% endif %}
+
+                            {{ radio.tag }}
+                            <div class="text-sm font-medium text-gray-700">{{ radio.choice_label }}</div>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.food_feeling.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.food_feeling.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Food Importance as Buttons -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.food_importance.label }}</label>
+                <div class="flex flex-wrap justify-center gap-4">
+                    {% for radio in form.food_importance %}
+                        <label for="{{ radio.id_for_label }}"
+                            class="selectable-option min-w-[7rem] bg-white border-2 rounded-xl px-4 py-3 cursor-pointer text-center transition duration-200
+                            {% if radio.data.checked %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                            {{ radio.tag }}
+                            <div class="text-sm font-medium text-gray-700">{{ radio.choice_label }}</div>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.food_importance.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.food_importance.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Treat Frequency as Buttons -->
+            <div class="mb-4">
+                <label class="block text-lg font-bold text-center text-gray-700 mb-2">{{ form.treat_frequency.label }}</label>
+                <div class="flex flex-wrap justify-center gap-4">
+                    {% for radio in form.treat_frequency %}
+                        <label for="{{ radio.id_for_label }}"
+                            class="selectable-option min-w-[7rem] bg-white border-2 rounded-xl px-4 py-3 cursor-pointer text-center transition duration-200
+                            {% if radio.data.checked %} border-blue-600 bg-blue-50 {% else %} border-gray-300 hover:border-blue-400 {% endif %}">
+                            {{ radio.tag }}
+                            <div class="text-sm font-medium text-gray-700">{{ radio.choice_label }}</div>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.treat_frequency.errors %}
+                    <p class="text-red-500 text-sm mt-3 text-center">{{ form.treat_frequency.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 transition">
+            {% if is_edit %}{{ _("Update") }}{% else %}{{ _("Save") }}{% endif %}
+        </button>
+    </form>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const petTypeRadios = document.querySelectorAll('input[name="pet_type"]');
+    const breedSelect = document.querySelector('#id_breed');
+    const url = "{% url 'pet:ajax_load_breeds' %}";
+
+    petTypeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const petTypeId = this.value;
+
+            fetch(`${url}?pet_type=${petTypeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let options = '<option value="">---------</option>';
+                    data.forEach(function(breed) {
+                        options += `<option value="${breed.id}">${breed.name}</option>`;
+                    });
+                    breedSelect.innerHTML = options;
+                })
+                .catch(error => console.error('Error loading breeds:', error));
+        });
+    });
+});
+</script>
+
+{% endblock %}

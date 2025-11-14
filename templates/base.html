@@ -1,0 +1,68 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FAMO{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (Standalone) -->
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    
+    <!-- daisyUI from CDN -->
+    <link href="https://cdn.jsdelivr.net/combine/npm/daisyui@5/base/rootcolor.css,npm/daisyui@5/base/reset.css,npm/daisyui@5/base/scrollbar.css,npm/daisyui@5/base/svg.css,npm/daisyui@5/base/rootscrollgutter.css,npm/daisyui@5/base/properties.css,npm/daisyui@5/base/rootscrolllock.css,npm/daisyui@5/components/footer.css,npm/daisyui@5/components/hovergallery.css,npm/daisyui@5/components/range.css,npm/daisyui@5/components/mask.css,npm/daisyui@5/components/stat.css,npm/daisyui@5/components/fab.css,npm/daisyui@5/components/label.css,npm/daisyui@5/components/toast.css,npm/daisyui@5/components/breadcrumbs.css,npm/daisyui@5/components/select.css,npm/daisyui@5/components/dock.css,npm/daisyui@5/components/avatar.css,npm/daisyui@5/components/validator.css,npm/daisyui@5/components/badge.css,npm/daisyui@5/components/stack.css,npm/daisyui@5/components/dropdown.css,npm/daisyui@5/components/hero.css,npm/daisyui@5/components/card.css,npm/daisyui@5/components/link.css,npm/daisyui@5/components/swap.css,npm/daisyui@5/components/loading.css,npm/daisyui@5/components/button.css,npm/daisyui@5/components/tooltip.css,npm/daisyui@5/components/countdown.css,npm/daisyui@5/components/radio.css,npm/daisyui@5/components/radialprogress.css,npm/daisyui@5/components/skeleton.css,npm/daisyui@5/components/modal.css,npm/daisyui@5/components/progress.css,npm/daisyui@5/components/calendar.css,npm/daisyui@5/components/rating.css,npm/daisyui@5/components/input.css,npm/daisyui@5/components/navbar.css,npm/daisyui@5/components/mockup.css,npm/daisyui@5/components/fieldset.css,npm/daisyui@5/components/status.css,npm/daisyui@5/components/table.css,npm/daisyui@5/components/toggle.css,npm/daisyui@5/components/divider.css,npm/daisyui@5/components/drawer.css,npm/daisyui@5/components/checkbox.css,npm/daisyui@5/components/carousel.css,npm/daisyui@5/components/menu.css,npm/daisyui@5/components/timeline.css,npm/daisyui@5/components/filter.css,npm/daisyui@5/components/chat.css,npm/daisyui@5/components/diff.css,npm/daisyui@5/components/indicator.css,npm/daisyui@5/components/steps.css,npm/daisyui@5/components/fileinput.css,npm/daisyui@5/components/alert.css,npm/daisyui@5/components/list.css,npm/daisyui@5/components/kbd.css,npm/daisyui@5/components/tab.css,npm/daisyui@5/components/textarea.css,npm/daisyui@5/components/collapse.css,npm/daisyui@5/utilities/typography.css,npm/daisyui@5/utilities/join.css,npm/daisyui@5/utilities/radius.css,npm/daisyui@5/utilities/glass.css,npm/daisyui@5/colors/states-extended.css,npm/daisyui@5/colors/states.css,npm/daisyui@5/colors/properties-extended.css,npm/daisyui@5/colors/responsive.css,npm/daisyui@5/colors/properties.css,npm/daisyui@5/colors/responsive-extended.css,npm/daisyui@5/theme/light.css" rel="stylesheet" type="text/css" />
+    
+    <link rel="stylesheet" href="{% static 'css/markdown-table.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    {% block extra_head %}{% endblock %}
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+</head>
+
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+
+    {% include 'partials/navbar.html' %}
+
+    <main class="flex-grow pt-20">
+        <div class="container mx-auto px-4">
+            {% if messages %}
+                <div class="space-y-2 mb-6">
+                    {% for message in messages %}
+                        <div class="
+                            px-4 py-3 rounded-md text-sm font-medium
+                            {% if message.tags == 'error' %}
+                                bg-red-100 text-red-800 border border-red-300
+                            {% elif message.tags == 'success' %}
+                                bg-green-100 text-green-800 border border-green-300
+                            {% elif message.tags == 'warning' %}
+                                bg-yellow-100 text-yellow-800 border border-yellow-300
+                            {% else %}
+                                bg-blue-100 text-blue-800 border border-blue-300
+                            {% endif %}
+                        ">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    {% include 'partials/footer.html' %}
+
+    <script src="{% static 'js/navbar.js' %}"></script>
+    <script src="{% static 'js/signup.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

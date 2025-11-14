@@ -1,0 +1,61 @@
+{% extends 'userapp/dashboard_base.html' %}
+{% load i18n %}
+{% block dashboard_content %}
+<div class="w-full max-w-xl bg-white rounded-2xl shadow-xl p-10">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+        <i class="fa-solid fa-user-edit text-blue-600 mr-3"></i>
+        {% trans "Edit Your Profile" %}
+    </h2>
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="id_first_name" class="block text-gray-700 font-semibold mb-1">
+                    <i class="fa-regular fa-user mr-1"></i> {% trans "First Name" %}
+                </label>
+                {{ form.first_name }}
+            </div>
+            <div>
+                <label for="id_last_name" class="block text-gray-700 font-semibold mb-1">
+                    <i class="fa-regular fa-user mr-1"></i> {% trans "Last Name" %}
+                </label>
+                {{ form.last_name }}
+            </div>
+            <div>
+                <label for="id_phone" class="block text-gray-700 font-semibold mb-1">
+                    <i class="fa-solid fa-phone mr-1"></i> {% trans "Phone" %}
+                </label>
+                {{ form.phone }}
+            </div>
+            <div>
+                <label for="id_city" class="block text-gray-700 font-semibold mb-1">
+                    <i class="fa-solid fa-city mr-1"></i> {% trans "City" %}
+                </label>
+                {{ form.city }}
+            </div>
+            <div>
+                <label for="id_zip_code" class="block text-gray-700 font-semibold mb-1">
+                    <i class="fa-solid fa-envelope mr-1"></i> {% trans "ZIP Code" %}
+                </label>
+                {{ form.zip_code }}
+            </div>
+            <div>
+                <label for="id_country" class="block text-gray-700 font-semibold mb-1">
+                    <i class="fa-solid fa-globe mr-1"></i> {% trans "Country" %}
+                </label>
+                {{ form.country }}
+            </div>
+        </div>
+        <div>
+            <label for="id_address" class="block text-gray-700 font-semibold mb-1">
+                <i class="fa-solid fa-location-dot mr-1"></i> {% trans "Address" %}
+            </label>
+            {{ form.address }}
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition ease-in-out duration-150 mt-4 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-save"></i>
+            {% trans "Save Changes" %}
+        </button>
+    </form>
+</div>
+{% endblock %}

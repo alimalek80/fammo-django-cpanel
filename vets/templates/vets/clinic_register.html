@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Register Your Veterinary Clinic" %} - FAMMO{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">
+                {% trans "Join FAMMO as a Partner Clinic" %}
+            </h1>
+            <p class="text-lg text-gray-600">
+                {% trans "Connect with pet owners and grow your practice through our trusted platform" %}
+            </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- Owner Account Section -->
+                <div class="border-b border-gray-200 pb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">
+                        {% trans "Account Information" %}
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="{{ form.owner_email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.owner_email.label }}
+                            </label>
+                            {{ form.owner_email }}
+                            {% if form.owner_email.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.owner_email.errors.0 }}</p>
+                            {% endif %}
+                            {% if form.owner_email.help_text %}
+                                <p class="text-gray-500 text-sm mt-1">{{ form.owner_email.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.owner_password.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.owner_password.label }}
+                            </label>
+                            {{ form.owner_password }}
+                            {% if form.owner_password.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.owner_password.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="{{ form.owner_password_confirm.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.owner_password_confirm.label }}
+                            </label>
+                            {{ form.owner_password_confirm }}
+                            {% if form.owner_password_confirm.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.owner_password_confirm.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clinic Information Section -->
+                <div class="border-b border-gray-200 pb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">
+                        {% trans "Clinic Information" %}
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.name.label }} <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.city.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.city.label }}
+                            </label>
+                            {{ form.city }}
+                            {% if form.city.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.city.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.phone.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.phone.label }}
+                            </label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.phone.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="{{ form.address.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.address.label }}
+                            </label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.address.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.email.label }}
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.email.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.website.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.website.label }}
+                            </label>
+                            {{ form.website }}
+                            {% if form.website.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.website.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.instagram.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.instagram.label }}
+                            </label>
+                            {{ form.instagram }}
+                            {% if form.instagram.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.instagram.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.working_hours.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.working_hours.label }}
+                            </label>
+                            {{ form.working_hours }}
+                            {% if form.working_hours.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.working_hours.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="{{ form.specializations.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.specializations.label }}
+                            </label>
+                            {{ form.specializations }}
+                            {% if form.specializations.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.specializations.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="{{ form.bio.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.bio.label }}
+                            </label>
+                            {{ form.bio }}
+                            {% if form.bio.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.bio.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="{{ form.logo.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.logo.label }}
+                            </label>
+                            {{ form.logo }}
+                            {% if form.logo.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.logo.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Veterinarian Profile Section -->
+                <div class="border-b border-gray-200 pb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">
+                        {% trans "Veterinarian Profile" %} <span class="text-sm font-normal text-gray-500">({% trans "Optional" %})</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label for="{{ form.vet_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.vet_name.label }}
+                            </label>
+                            {{ form.vet_name }}
+                            {% if form.vet_name.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.vet_name.errors.0 }}</p>
+                            {% endif %}
+                            {% if form.vet_name.help_text %}
+                                <p class="text-gray-500 text-sm mt-1">{{ form.vet_name.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.degrees.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.degrees.label }}
+                            </label>
+                            {{ form.degrees }}
+                            {% if form.degrees.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.degrees.errors.0 }}</p>
+                            {% endif %}
+                            {% if form.degrees.help_text %}
+                                <p class="text-gray-500 text-sm mt-1">{{ form.degrees.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.certifications.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                                {{ form.certifications.label }}
+                            </label>
+                            {{ form.certifications }}
+                            {% if form.certifications.errors %}
+                                <p class="text-red-600 text-sm mt-1">{{ form.certifications.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terms and Submit -->
+                <div class="pt-6">
+                    <!-- Terms and Conditions Checkbox -->
+                    <div class="flex items-start mb-4">
+                        <input type="checkbox" name="agree_clinic_terms" id="agree_clinic_terms" required class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <label for="agree_clinic_terms" class="ml-2 text-sm text-gray-700">
+                            {% trans "I have read and agree to" %}
+                            <a href="{% url 'vets:clinic_terms_and_conditions' %}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+                                {% trans "FAMMO.ai's Terms and Conditions for Clinics" %}
+                            </a>
+                        </label>
+                    </div>
+                    
+                    <!-- Partnership Agreement Checkbox -->
+                    <div class="flex items-start mb-6">
+                        <input type="checkbox" name="agree_partnership" id="agree_partnership" required class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                        <label for="agree_partnership" class="ml-2 text-sm text-gray-700">
+                            {% trans "I have read and agree to the" %}
+                            <a href="{% url 'vets:clinic_partnership_agreement' %}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">
+                                {% trans "FAMMO Clinic Partnership Agreement" %}
+                            </a>
+                        </label>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4">
+                        <a href="{% url 'vets:partner_clinics' %}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            {% trans "Cancel" %}
+                        </a>
+                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            {% trans "Register Clinic" %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Form styling */
+input[type="text"], input[type="email"], input[type="password"], input[type="url"], textarea, input[type="file"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    outline: none;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, input[type="url"]:focus, textarea:focus, input[type="file"]:focus {
+    box-shadow: 0 0 0 2px #3b82f6;
+    border-color: #3b82f6;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input[type="checkbox"] {
+    height: 1rem;
+    width: 1rem;
+    color: #2563eb;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+}
+</style>
+{% endblock %}

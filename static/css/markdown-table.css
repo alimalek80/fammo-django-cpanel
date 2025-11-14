@@ -1,0 +1,70 @@
+/* static/css/markdown-table.css */
+.markdown-content table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.markdown-content th, .markdown-content td {
+    border: 1px solid #d1d5db; /* Tailwind gray-300 */
+    padding: 0.5em 1em;
+}
+.markdown-content th {
+    background: #f3f4f6; /* Tailwind gray-100 */
+}
+.markdown-content ul {
+    list-style-type: disc !important;
+    margin-left: 1.5em;
+}
+.markdown-content ol {
+    list-style-type: decimal !important;
+    margin-left: 1.5em;
+}
+.markdown-content li {
+    margin-bottom: 0.25em;
+}
+.markdown-content {
+    color: black;
+}
+
+/* Blog-specific reset */
+.blog-article,
+.blog-article * {
+  /* prevent accidental blue text from parent utilities */
+  --tw-prose-body: #111827;
+  --tw-prose-headings: #111827;
+  --tw-prose-links: #2563eb;
+  --tw-prose-bold: #111827;
+  color: inherit;
+}
+
+/* Strong base for markdown body */
+.markdown-content { color: #111827 !important; }
+.markdown-content a { color: #2563eb !important; }
+.markdown-content a:hover { color: #1d4ed8 !important; }
+
+/* Form controls inside blog pages */
+.blog-article select,
+.blog-article textarea,
+.blog-article input {
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #111827;
+  border-radius: 0.375rem;
+}
+
+.blog-article select:focus,
+.blog-article textarea:focus,
+.blog-article input:focus {
+  outline: none;
+  border-color: #6b7280;           /* gray-500 */
+  box-shadow: 0 0 0 3px rgba(107,114,128,.25); /* subtle gray ring */
+}
+
+.blog-article label { color: #111827; }
+
+
+/* Make DaisyUI stars visible on all screens */
+.rating input.mask-star-2 { background-color: #d1d5db; }     /* gray-300 for unchecked */
+.rating input.mask-star-2:checked { background-color: #f59e0b; } /* amber-500 for selected */
+/* Optional hover highlight */
+.rating input.mask-star-2:hover { background-color: #facc15; }   /* yellow-400 on hover */
+

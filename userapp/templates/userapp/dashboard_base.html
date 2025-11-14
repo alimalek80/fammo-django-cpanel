@@ -1,0 +1,126 @@
+<!-- filepath: d:\FAMO-PET\userapp\templates\userapp\dashboard_base.html -->
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="min-h-[70vh] flex bg-gradient-to-br from-blue-50 via-white to-indigo-50 rounded-xl shadow-2xl overflow-hidden relative">
+    <!-- Mobile Sidebar Toggle Button -->
+    <button id="sidebarToggle"
+        class="md:hidden fixed top-20 left-6 z-50 bg-white text-blue-600 p-3 rounded-full shadow-lg border border-blue-200 hover:bg-blue-100 hover:text-blue-700 transition focus:outline-none flex items-center justify-center"
+        aria-label="Open sidebar">
+        <!-- Hamburger SVG icon -->
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+    </button>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-72 bg-gradient-to-b from-blue-600 to-indigo-600 text-white flex flex-col py-10 px-6 shadow-lg
+        fixed inset-y-0 left-0 z-40 transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0 md:flex md:w-72">
+        <div class="flex items-center mb-12">
+            <span class="text-3xl font-extrabold tracking-wide">FAMO</span>
+        </div>
+        <nav class="flex-1">
+            <ul class="space-y-2">
+                <li>
+                    <a href="{% url 'update_profile' %}" class="flex items-center px-5 py-3 rounded-lg font-medium hover:bg-blue-500 hover:text-white transition group">
+                        <i class="fa-solid fa-user-edit mr-4 text-lg group-hover:scale-110 transition"></i>
+                        <span>{% trans "Edit Profile" %}</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'pet:my_pets' %}" class="flex items-center px-5 py-3 rounded-lg font-medium hover:bg-green-100 hover:text-green-700 transition group">
+                        <i class="fa-solid fa-paw mr-4 text-lg group-hover:scale-110 transition"></i>
+                        <span>{% trans "My Pets" %}</span>
+                    </a>
+                </li>                               
+                {% if request.user.is_staff or request.user.is_superuser %}
+                <li>
+                    <a href="{% url 'users_admin' %}" class="flex items-center px-5 py-3 rounded-lg font-medium hover:bg-yellow-100 hover:text-yellow-700 transition group">
+                        <i class="fa-solid fa-users-cog mr-4 text-lg group-hover:scale-110 transition"></i>
+                        <span>{% trans "Users" %}</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{% url 'core:manage_hero_section' %}" class="flex items-center px-5 py-3 rounded-lg font-medium hover:bg-yellow-100 hover:text-yellow-700 transition group">
+                        <i class="fa-solid fa-image mr-4 text-lg group-hover:scale-110 transition"></i>
+                        <span>{% trans "Homepage Hero" %}</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_dashboard' %}" class="flex items-center px-5 py-3 rounded-lg font-medium hover:bg-indigo-500 hover:text-white transition group">
+                        <i class="fa-solid fa-chart-line mr-4 text-lg group-hover:scale-110 transition"></i>
+                        <span>{% trans "Statistics" %}</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'core:manage_social_links' %}" class="flex items-center px-5 py-3 rounded-lg font-medium hover:bg-blue-100 hover:text-blue-700 transition group">
+                        <i class="fa-brands fa-share-nodes mr-4 text-lg group-hover:scale-110 transition"></i>
+                        <span>{% trans "Social Links" %}</span>
+                    </a>
+                </li>
+
+                {% endif %}
+               
+                <li>
+                    <a href="{% url 'ai_history' %}" class="flex items-center px-5 py-3 rounded-lg font-medium hover:bg-indigo-500 hover:text-white transition group">
+                        <i class="fa-solid fa-robot mr-4 text-lg group-hover:scale-110 transition"></i>
+                        <span>{% trans "AI History" %}</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'subscription_plans' %}" class="flex items-center px-5 py-3 rounded-lg font-medium hover:bg-purple-100 hover:text-purple-700 transition group">
+                        <i class="fa-solid fa-star mr-4 text-lg group-hover:scale-110 transition"></i>
+                        <span>{% trans "My Plan" %}</span>
+                    </a>
+                </li>
+                <li>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full flex items-center px-5 py-3 rounded-lg font-medium hover:bg-red-500 hover:text-white transition group">
+                            <i class="fa-solid fa-sign-out-alt mr-4 text-lg group-hover:scale-110 transition"></i>
+                            <span>{% trans "Logout" %}</span>
+                        </button>
+                    </form>
+                </li>                
+            </ul>
+        </nav>
+        <div class="mt-auto pt-8 text-xs text-blue-100">
+            &copy; 2025 FAMO
+        </div>
+    </aside>
+    <!-- Overlay for mobile -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-40 z-30 hidden md:hidden"></div>
+    <!-- Main Content -->
+    <section class="flex-1 p-10 flex flex-col justify-center items-center bg-transparent md:ml-0 ml-0">
+        <!-- Stats Block -->
+        <div class="w-full max-w-4xl mx-auto mt-6 mb-4 bg-white rounded-lg shadow p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+                <div class="bg-indigo-50 p-4 rounded">
+                    <h4 class="text-lg font-semibold text-indigo-700">{% trans "Meal Suggestions" %}</h4>
+                    <p class="text-xl font-bold">{{ user_meal_used }}/{{ user_meal_limit }}</p>
+                </div>
+                <div class="bg-red-50 p-4 rounded">
+                    <h4 class="text-lg font-semibold text-red-700">{% trans "Health Reports" %}</h4>
+                    <p class="text-xl font-bold">{{ user_health_used }}/{{ user_health_limit }}</p>
+                </div>
+            </div>
+        </div>
+        {% block dashboard_content %}{% endblock %}
+    </section>
+</div>
+<script>
+    // Sidebar toggle for mobile
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('-translate-x-full');
+        sidebarOverlay.classList.toggle('hidden');
+    });
+    sidebarOverlay.addEventListener('click', function() {
+        sidebar.classList.add('-translate-x-full');
+        sidebarOverlay.classList.add('hidden');
+    });
+</script>
+{% endblock %}

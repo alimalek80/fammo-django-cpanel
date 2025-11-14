@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New Clinic Pending Approval - FAMMO Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .button {
+            display: inline-block;
+            background: #007bff;
+            color: white !important;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px;
+            font-weight: bold;
+        }
+        .approve-btn {
+            background: #28a745;
+        }
+        .review-btn {
+            background: #007bff;
+        }
+        .clinic-details {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .status-pending {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 New Clinic Registration</h1>
+        <p>Pending Admin Approval</p>
+    </div>
+    
+    <div class="content">
+        <div class="status-pending">
+            <strong>⏳ Action Required:</strong> A new clinic has confirmed their email and is awaiting admin approval for public listing.
+        </div>
+        
+        <div class="clinic-details">
+            <h3>Clinic Information</h3>
+            <p><strong>Clinic Name:</strong> {{ clinic.name }}</p>
+            <p><strong>Owner Email:</strong> {{ clinic.owner.email }}</p>
+            <p><strong>Clinic Email:</strong> {{ clinic.email }}</p>
+            <p><strong>City:</strong> {{ clinic.city }}</p>
+            {% if clinic.address %}
+            <p><strong>Address:</strong> {{ clinic.address }}</p>
+            {% endif %}
+            {% if clinic.phone %}
+            <p><strong>Phone:</strong> {{ clinic.phone }}</p>
+            {% endif %}
+            {% if clinic.website %}
+            <p><strong>Website:</strong> <a href="{{ clinic.website }}">{{ clinic.website }}</a></p>
+            {% endif %}
+            {% if clinic.specializations %}
+            <p><strong>Specializations:</strong> {{ clinic.specializations }}</p>
+            {% endif %}
+            {% if clinic.working_hours %}
+            <p><strong>Working Hours:</strong> {{ clinic.working_hours }}</p>
+            {% endif %}
+            {% if clinic.bio %}
+            <p><strong>Bio:</strong> {{ clinic.bio|truncatewords:50 }}</p>
+            {% endif %}
+            <p><strong>Registration Date:</strong> {{ clinic.created_at|date:"F d, Y H:i" }}</p>
+            <p><strong>Email Confirmed:</strong> {{ clinic.email_confirmed|yesno:"Yes,No" }}</p>
+        </div>
+        
+        <h3>Admin Actions</h3>
+        <p>Review the clinic information and take appropriate action:</p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ admin_url }}" class="button review-btn">
+                📋 Review in Admin Panel
+            </a>
+        </div>
+        
+        <h4>Next Steps:</h4>
+        <ol>
+            <li>Review the clinic information for accuracy</li>
+            <li>Verify the clinic's legitimacy (website, phone, etc.)</li>
+            <li>Check for any duplicate registrations</li>
+            <li>Approve or reject the clinic in the admin panel</li>
+        </ol>
+        
+        <p><strong>Note:</strong> Once approved, the clinic will:</p>
+        <ul>
+            <li>Appear in the public "Trusted Clinics" directory</li>
+            <li>Get access to their full dashboard features</li>
+            <li>Be able to generate referral codes</li>
+            <li>Receive analytics about their referrals</li>
+        </ul>
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
+        <p>FAMMO Admin Notification System</p>
+        <p>Clinic ID: {{ clinic.id }} | Slug: {{ clinic.slug }}</p>
+    </div>
+</body>
+</html>
